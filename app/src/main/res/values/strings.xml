@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Monuments</string>
+    <string name="menu_inicio">Inicio</string>
+    <string name="menu_monumentos">Monuments</string>
+    <string name="menu_mapa">Map</string>
+    <string name="menu_ayuda">Help</string>
+    <string name="leer_mas_boton">Más en Wikipedia</string>
+    <string name="aceptar_boton">Aceptar</string>
+    <string name="imagen_poi">Imagen POI</string>
+    <string name="buscar_monumentos_boton">Buscar alrededor de mi posición</string>
+
+
+    <string name="error_activar_GPS_1">Por favor, active el GPS.</string>
+    <string name="error_activar_GPS_2">Algunas funcionalidades no pueden utilizarse sin GPS</string>
+    <string name="error_activar_Internet_1">Por favor, active la conexión a Internet.</string>
+    <string name="error_activar_Internet_2">Esta aplicación no puede funcionar sin una conexión a Internet</string>
+</resources>

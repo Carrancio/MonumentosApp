@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/menu_inicio"
+
+            android:title="@string/menu_inicio" />
+        <item
+            android:id="@+id/menu_monumentos"
+
+            android:title="@string/menu_monumentos"/>
+        <item
+            android:id="@+id/menu_mapa"
+
+            android:title="@string/menu_mapa"/>
+        <item
+            android:id="@+id/menu_ayuda"
+
+            android:title="@string/menu_ayuda"/>
+    </group>
+
+
+</menu>

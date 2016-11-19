@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Monumentos</string>
+    <string name="menu_mapa">Mapa</string>
+    <string name="menu_monumentos">Monumentos</string>
+    <string name="menu_ayuda">Ayuda</string>
+    <string name="leer_mas_boton">Más en Wikipedia</string>
+    <string name="buscar_monumentos_boton">Buscar alrededor de mi posición</string>
+</resources>
