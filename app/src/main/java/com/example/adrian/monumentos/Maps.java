@@ -23,7 +23,7 @@ import org.json.JSONObject;
  */
 public class Maps extends AppCompatActivity implements OnMapReadyCallback {
 
-    private static final String TAG ="<<<<<<<<<<<<<<<<<" ;
+    private String TAG = Maps.class.getSimpleName();
     private GoogleMap mMap;
 
     @Override
@@ -46,7 +46,9 @@ public class Maps extends AppCompatActivity implements OnMapReadyCallback {
            double e1 = getIntent().getDoubleExtra("latitudGPS", 0);
            double e2 = getIntent().getDoubleExtra("longitudGPS", 0);
 
-           Log.e(TAG, ">>>>>>>>>>>>>>>>" + jSonCoords+e1+e2);
+           Log.e(TAG, "JSON: " + jSonCoords);
+           Log.e(TAG, "Latitud: " + e1);
+           Log.e(TAG, "Longitud: " + e2);
 
            if (jSonCoords != null) {
 
@@ -82,10 +84,8 @@ public class Maps extends AppCompatActivity implements OnMapReadyCallback {
                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(e1,e2),13));
 
                    CameraPosition cameraPosition = new CameraPosition.Builder()
-                           .target(new LatLng(e1,e2))      // Sets the center of the map to location user
-                           .zoom(17)                   // Sets the zoom
-                        //.Address location;bearing(90)          // Sets the orientation of the camera to east
-                       // .tilt(40)            // Sets the tilt of the camera to 30 degrees
+                           .target(new LatLng(e1,e2))      // Centramos el mapa a la posicion del usuario
+                           .zoom(17)                   // Ponemos el zoom
                            .build();                   // Creates a CameraPosition from the builder
 
                    LatLng miubicacion = new LatLng(e1,e2);
