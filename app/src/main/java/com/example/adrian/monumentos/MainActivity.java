@@ -36,8 +36,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -62,10 +60,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private Location location;
 
     //El radio se debe recoger del usuario
-    private int radio = 10000;
+    private int radio = 1000;
 
+    //El número máximo de POI se debe recoger del usuario
+    private int maxPOI = 500;
 
-    private GlobalState globalState;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -100,7 +99,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
 
         idioma = Locale.getDefault().getLanguage();
-        globalState = (GlobalState) MainActivity.this.getApplicationContext();
 
         mResolvingError = savedInstanceState != null
                 && savedInstanceState.getBoolean(STATE_RESOLVING_ERROR, false);
@@ -131,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 
             @Override
-            public boolean onNavigationItemSelected(MenuItem item) {
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 boolean fragmentTransaction = false;
                 Fragment fragment = null;
                 // Intent IrMapa = new Intent(MainActivity.this,Maps.class);
@@ -155,12 +153,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                         if((latitudGPS == 0.0) && (longitudGPS == 0.0)){
                             obtenerCoordenadasGPS();
+                            Toast.makeText(MainActivity.this, "No se han encontrado datos de puntos de interés cercanos a su posición", Toast.LENGTH_SHORT).show();
                         }
-
-                        Toast.makeText(MainActivity.this, "Obteniendo puntos de interés...", Toast.LENGTH_SHORT).show();
-                        while(globalState.getListaPOIs().isEmpty()){
-                            //Bucle de espera a que se obtengan los POIs
-                        }
+                        else
+                            Toast.makeText(MainActivity.this, "Obteniendo puntos de interés...", Toast.LENGTH_SHORT).show();
 
                         POIListFragment poiListFragment = new POIListFragment();
                         getFragmentManager()
@@ -175,12 +171,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                         if((latitudGPS == 0.0) && (longitudGPS == 0.0)){
                             obtenerCoordenadasGPS();
+                            Toast.makeText(MainActivity.this, "No se han encontrado datos de puntos de interés cercanos a su posición", Toast.LENGTH_SHORT).show();
                         }
+                        else
+                            Toast.makeText(MainActivity.this, "Obteniendo puntos de interés...", Toast.LENGTH_SHORT).show();
 
-                        Toast.makeText(MainActivity.this, "Obteniendo puntos de interés...", Toast.LENGTH_SHORT).show();
-                        while(globalState.getListaPOIs().isEmpty()){
-                            //Bucle de espera a que se obtengan los POIs
-                        }
                         //pasando parametros a otra actividad
                         i.putExtra("jSonCoords",jSonCoords);
                         i.putExtra("latitudGPS",latitudGPS);
@@ -221,14 +216,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         @Override
         protected Void doInBackground(Void... params) {
 
-            String nombre, descripcion, latitud, longitud, url_imagen, enlace;
             ArrayList<POI> listaPOIs = new ArrayList<>();
+            ArrayList<ArrayList<String>> listaPoi = new ArrayList<>();
+            String pageIds = "";
 
             HttpHandler handler = new HttpHandler();
 
             //Petición a la API de Wikipedia y almacenamiento de la respuesta
             String urlCoords = HTTPS + idioma + WIKI_URL + "&list=geosearch&gscoord=" +
-                    latitudGPS + "%7C" + longitudGPS + "&gsradius=" + radio;
+                    latitudGPS + "%7C" + longitudGPS + "&gsradius=" + radio + "&gslimit=" + maxPOI;
 
             jSonCoords = handler.makeServiceCall(urlCoords);
             String jSonExtract, jSonImage;
@@ -246,46 +242,66 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 for (int i = 0; i < geosearch.length(); i++) {
                     JSONObject object = geosearch.getJSONObject(i);
 
-                    nombre = object.getString("title");
-                    latitud = object.getString("lat");
-                    longitud = object.getString("lon");
+                    ArrayList<String> poi = new ArrayList<>();
 
+                    pageIds += object.getString("pageid") + '|';
+
+                    poi.add(object.getString("pageid"));
+                    poi.add(object.getString("title"));
+                    poi.add(object.getString("lat"));
+                    poi.add(object.getString("lon"));
+
+                    listaPoi.add(poi);
+                }
+
+                //Extraemos el último carácter añadido
+                pageIds = pageIds.substring(0, pageIds.length() - 1);
+
+                for(int j = 0; j < geosearch.length(); j++){
                     //Segunda petición a la API de WikiPedia para obtener el "extract" de un POI
-                    String urlExtract = HTTPS + idioma + WIKI_URL + "&prop=extracts&exintro=&explaintext=" + "&titles=";
-
-                    //Tercera petición a la API de WikiPedia para extraer la URL de la imagen de un POI
-                    String urlImage = HTTPS + idioma + WIKI_URL + "&prop=pageprops|info|pageimages&inprop=url&pithumbsize=560&titles=";
-
-                    String nombreCodificado = null;
-
-                    //Obtención de la URL para el "extract" y la URL de la imagen del POI
-                    try {
-                        nombreCodificado = URLEncoder.encode(nombre, "UTF-8");
-                    } catch (UnsupportedEncodingException e){
-                        e.printStackTrace();
-                    }
-
-                    urlExtract += nombreCodificado;
-                    urlImage += nombreCodificado;
+                    String urlExtract = HTTPS + idioma + WIKI_URL + "&prop=extracts&exintro=&explaintext=&pageids=" + listaPoi.get(j).get(0);
 
                     jSonExtract = handler.makeServiceCall(urlExtract);
-                    jSonImage = handler.makeServiceCall(urlImage);
 
                     //Obtención del objeto JSON
                     JSONObject jsonObjectExtract = new JSONObject(jSonExtract);
-                    JSONObject jsonObjectImage = new JSONObject(jSonImage);
 
-                    descripcion = jsonObjectExtract.getJSONObject("query").getJSONObject("pages").getJSONObject(object.getString("pageid")).getString("extract");
-
-                    url_imagen = jsonObjectImage.getJSONObject("query").getJSONObject("pages").getJSONObject(object.getString("pageid")).getJSONObject("thumbnail").getString("source");
-
-                    enlace = HTTPS + idioma + ".m.wikipedia.org/wiki?curid=" + object.getString("pageid");
-
-                    listaPOIs.add(new POI(nombre, descripcion, Double.parseDouble(latitud), Double.parseDouble(longitud), url_imagen, enlace));
+                    listaPoi.get(j).add(jsonObjectExtract.getJSONObject("query").getJSONObject("pages").getJSONObject(listaPoi.get(j).get(0)).getString("extract"));
                 }
 
-            } catch (final JSONException e) {
-                Log.e(TAG, "Error analizando el JSon: " + e.getMessage());
+                //Tercera petición a la API de WikiPedia para extraer la URL de la imagen de un POI
+                String urlImage = HTTPS + idioma + WIKI_URL + "&prop=pageprops|info|pageimages&inprop=url&pilimit=50&pithumbsize=560&pageids=" + pageIds;
+
+                jSonImage = handler.makeServiceCall(urlImage);
+
+                //Obtención del objeto JSON
+                JSONObject jsonObjectImage = new JSONObject(jSonImage);
+
+                //Array de JSons
+                JSONObject images = jsonObjectImage.getJSONObject("query").getJSONObject("pages");
+
+
+                //Bucle de recorrido de la lista de POIS para añadir la URL de la imagen y el enlace
+                for (ArrayList<String> nuevoPoi : listaPoi) {
+
+                    try {
+                        //Añadir la URL de la imagen al ArrayList
+                        nuevoPoi.add(images.getJSONObject(nuevoPoi.get(0)).getJSONObject("thumbnail").getString("source"));
+                    } catch (JSONException e){
+                        nuevoPoi.add(null);
+                    }
+
+                    //Añadir el enlace al ArrayList
+                    nuevoPoi.add(HTTPS + idioma + ".m.wikipedia.org/wiki?curid=" + nuevoPoi.get(0));
+                }
+
+                //Bucle para crear definitivamente el POI con los datos obtenidos
+                for (ArrayList<String> nuevoPoi : listaPoi) {
+                    listaPOIs.add(new POI(nuevoPoi.get(1), nuevoPoi.get(4), Double.parseDouble(nuevoPoi.get(2)), Double.parseDouble(nuevoPoi.get(3)), nuevoPoi.get(5), nuevoPoi.get(6)));
+                }
+
+            } catch (Exception e) {
+                Log.e(TAG, "Un error inesperado ocurrió: " + e.getMessage());
             }
 
             GlobalState globalState = (GlobalState) MainActivity.this.getApplicationContext();
@@ -400,23 +416,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        if (mResolvingError) {
-            // Already attempting to resolve an error.
-            return;
-        } else if (connectionResult.hasResolution()) {
-            try {
+        if (!mResolvingError) {
+            if (connectionResult.hasResolution()) {
+                try {
+                    mResolvingError = true;
+                    connectionResult.startResolutionForResult(this, REQUEST_RESOLVE_ERROR);
+                } catch (IntentSender.SendIntentException e) {
+                    // There was an error with the resolution intent. Try again.
+                    mGoogleApiClient.connect();
+                }
+            } else {
+                // Show dialog using GooglePlayServicesUtil.getErrorDialog()
+                showErrorDialog(connectionResult.getErrorCode());
                 mResolvingError = true;
-                connectionResult.startResolutionForResult(this, REQUEST_RESOLVE_ERROR);
-            } catch (IntentSender.SendIntentException e) {
-                // There was an error with the resolution intent. Try again.
-                mGoogleApiClient.connect();
             }
-        } else {
-            // Show dialog using GooglePlayServicesUtil.getErrorDialog()
-            showErrorDialog(connectionResult.getErrorCode());
-            mResolvingError = true;
         }
-
     }
 
     /* Creates a dialog for an error message */
@@ -439,6 +453,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public static class ErrorDialogFragment extends DialogFragment {
         public ErrorDialogFragment() { }
 
+        @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Get the error code and retrieve the appropriate dialog
@@ -456,12 +471,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     /*Comprobación permisos ubicación (GPS) concedidos*/
     private boolean hasPermisosUbicacion(){
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED)
-            //No tenemos permisos de ubicación
-            return false;
+        return ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
 
-        return true;
     }
 
     /*Solicitar permisos de ubicación al usuario*/
