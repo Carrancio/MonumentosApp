@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Monuments</string>
+    <string name="app_name">Cluster05</string>
     <string name="menu_inicio">Inicio</string>
     <string name="menu_monumentos">Monuments</string>
     <string name="menu_mapa">Map</string>
@@ -8,7 +8,7 @@
     <string name="leer_mas_boton">Más en Wikipedia</string>
     <string name="aceptar_boton">Aceptar</string>
     <string name="imagen_poi">Imagen POI</string>
-    <string name="buscar_monumentos_boton">Buscar alrededor de mi posición</string>
+    <string name="buscar_monumentos_boton">Find around my position</string>
 
 
     <string name="error_activar_GPS_1">Por favor, active el GPS.</string>

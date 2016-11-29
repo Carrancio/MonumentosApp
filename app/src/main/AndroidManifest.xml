@@ -17,7 +17,7 @@
         android:name=".GlobalState" >
         <activity android:name=".MainActivity" android:configChanges="screenSize|orientation" >
             <intent-filter
-                android:label="Cluster05"
+
                 >
 
 
