@@ -19,30 +19,50 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
-
+ * Esta Clase muestra un mapa con las posiciones de los monumentos y nuestra posicion
+ * @author Adrian Munoz Rojo
+ * @author Rafael Matamoros Luque
+ * @author David Carrancio Aguado
+ *
  */
 public class Maps extends AppCompatActivity implements OnMapReadyCallback {
 
     private String TAG = Maps.class.getSimpleName();
     private GoogleMap mMap;
 
+    /**
+     *
+     * @param savedInstanceState
+     */
     @Override
        protected void onCreate(Bundle savedInstanceState) {
            super.onCreate(savedInstanceState);
            setContentView(R.layout.maps);
-        //mapa en un fragmento
-           MapFragment mapFragment = (MapFragment) getFragmentManager()
+
+        //Mostramos el mapa en un fragmento
+
+        MapFragment mapFragment = (MapFragment) getFragmentManager()
                    .findFragmentById(R.id.map);
 
            mapFragment.getMapAsync(this);
        }
 
+
+    /**
+     * Utilizamos este metodo para trabajar con el mapa
+     * Podemos añadir marcadores
+     * @param googleMap
+     */
        @Override
        public void onMapReady(GoogleMap googleMap) {
 
            mMap= googleMap;
 
+           //Metemos en un string el json que recibe del MainActivity
            String jSonCoords = getIntent().getStringExtra("jSonCoords");
+
+           //Metemos en un double las coordenadas del movil
+
            double e1 = getIntent().getDoubleExtra("latitudGPS", 0);
            double e2 = getIntent().getDoubleExtra("longitudGPS", 0);
 
@@ -56,7 +76,9 @@ public class Maps extends AppCompatActivity implements OnMapReadyCallback {
                    JSONObject jsonObj = new JSONObject(jSonCoords);
 
                    JSONArray geosearch = jsonObj.getJSONArray("geosearch");
-    //añadir marcadores
+
+                    //añadir marcadores con las coordenadas de cada monumento y su nombre
+
                    for (int i = 0; i < geosearch.length(); i++) {
                        JSONObject c = geosearch.getJSONObject(i);
                        String lat = c.getString("lat");
@@ -83,11 +105,12 @@ public class Maps extends AppCompatActivity implements OnMapReadyCallback {
 
                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(e1,e2),13));
 
+               // Centramos el mapa a la posicion del usuario
                    CameraPosition cameraPosition = new CameraPosition.Builder()
-                           .target(new LatLng(e1,e2))      // Centramos el mapa a la posicion del usuario
-                           .zoom(17)                   // Ponemos el zoom
-                           .build();                   // Creates a CameraPosition from the builder
-
+                           .target(new LatLng(e1,e2))
+                           .zoom(17)
+                           .build();
+                    //Añadimos marcador a nuestra posicion
                    LatLng miubicacion = new LatLng(e1,e2);
                    mMap.addMarker(new MarkerOptions().position(miubicacion).title("AQUI ESTAS TU").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
                    mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));

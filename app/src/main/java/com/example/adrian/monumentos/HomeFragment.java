@@ -16,6 +16,12 @@ import android.widget.Button;
 
 import com.google.android.gms.maps.MapFragment;
 
+/**
+ * Esta clase
+ * @author Adrian Munoz Rojo
+ * @author Rafael Matamoros Luque
+ * @author David Carrancio Aguado
+ */
 public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private LocationManager locationManager;

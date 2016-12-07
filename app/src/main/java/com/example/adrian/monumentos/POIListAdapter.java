@@ -31,6 +31,7 @@ public class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHold
         private final TextView tituloPoi, descripcionPoi;
         private final ImageView imagenPoi;
         private final Button botonLeerMas;
+        private final Button irAlMapa;
 
         private ViewHolder(View vista) {
             super(vista);
@@ -39,6 +40,7 @@ public class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHold
             descripcionPoi = (TextView) vista.findViewById(R.id.descripcion_poi);
             imagenPoi = (ImageView) vista.findViewById(R.id.imagen_poi);
             botonLeerMas = (Button) vista.findViewById(R.id.boton_leer_mas);
+            irAlMapa = (Button) vista.findViewById(R.id.boton_ir_al_mapa);
         }
     }
 

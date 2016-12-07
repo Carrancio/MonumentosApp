@@ -15,7 +15,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -39,6 +38,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Locale;
 
+/**
+ * Esta es la clase principal
+ * @author Adrian Munoz Rojo
+ * @author Rafael Matamoros Luque
+ * @author David Carrancio Aguado
+ */
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
 
@@ -82,6 +87,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private static final int LOCATION_INTERVAL = 1000;
 
 
+    /**
+     * Crea la vista
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         mResolvingError = savedInstanceState != null
                 && savedInstanceState.getBoolean(STATE_RESOLVING_ERROR, false);
 
-        // Create an instance of GoogleAPIClient.
+        // Crea una instancia de  GoogleAPIClient.
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
@@ -117,6 +126,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         //Fragmento inicial "Home" de la App
         final HomeFragment homeFragment = new HomeFragment();
+        //Fragmento de informacion
+        final Fragment1 fragment = new Fragment1();
         getFragmentManager().beginTransaction().add(R.id.content_frame, homeFragment).commit();
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -130,8 +141,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                boolean fragmentTransaction = false;
-                Fragment fragment = null;
+               // boolean fragmentTransaction = false;
+               // Fragment fragment = null;
                 // Intent IrMapa = new Intent(MainActivity.this,Maps.class);
                 Intent i = new Intent(MainActivity.this, Maps.class);
 
@@ -141,12 +152,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                         getFragmentManager().beginTransaction().replace(R.id.content_frame, homeFragment).commit();
 
+
                         break;
 
                     case R.id.menu_ayuda:
 
-                        fragment = new Fragment1();
-                        fragmentTransaction = true;
+
+                      //  fragmentTransaction = true;
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.content_frame, fragment)
+                                .commit();
+
                         break;
 
                     case R.id.menu_monumentos:
@@ -187,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                 }
                 //se sustituye el contenido
-                if (fragmentTransaction) {
+              /*  if (fragmentTransaction) {
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.content_frame, fragment)
                             .addToBackStack(null)
@@ -195,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                     item.setChecked(true);
                     getSupportActionBar().setTitle(item.getTitle());
-                }
+                }*/
 
                 drawerLayout.closeDrawers();
 
@@ -210,9 +226,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+    /**
+     *
+     */
     private class GETPOIs extends AsyncTask<Void, Void, Void> {
 
-
+        /**
+         *
+         * @param params
+         * @return
+         */
         @Override
         protected Void doInBackground(Void... params) {
 
