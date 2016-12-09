@@ -1,14 +1,15 @@
 <resources>
     <string name="app_name">Cluster05</string>
     <string name="menu_inicio">Inicio</string>
-    <string name="menu_monumentos">Monuments</string>
-    <string name="menu_mapa">Map</string>
-    <string name="menu_ayuda">Help</string>
+    <string name="menu_monumentos">Monumentos</string>
+    <string name="menu_mapa">Mapa</string>
+    <string name="menu_ayuda">Ayuda</string>
     <string name="ir_al_mapa_boton">Ir al mapa</string>
     <string name="leer_mas_boton">Más en Wikipedia</string>
     <string name="aceptar_boton">Aceptar</string>
     <string name="imagen_poi">Imagen POI</string>
-    <string name="buscar_monumentos_boton">Find around my position</string>
+    <string name="buscar_monumentos_boton">Buscar alrededor de mi posición</string>
+    <string name="titulo">Titulo</string>
 
 
     <string name="error_activar_GPS_1">Por favor, active el GPS.</string>

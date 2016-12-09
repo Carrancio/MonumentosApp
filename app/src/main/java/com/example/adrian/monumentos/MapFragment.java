@@ -4,7 +4,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +33,6 @@ import org.json.JSONObject;
 public class MapFragment extends Fragment implements OnMapReadyCallback{
 
     private Bundle params;
-    private String TAG;
 
     private GoogleMap map;
     private MapView mapView;
@@ -92,8 +90,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
         View vista = inflater.inflate(R.layout.map_fragment, container, false);
 
-        TAG = getActivity().getClass().getSimpleName();
-
         MapsInitializer.initialize(getActivity());
         mapView = (MapView) vista.findViewById(R.id.map);
 
@@ -107,9 +103,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     private void setUpMapIfNeeded() {
         if (map == null) {
             mapView.getMapAsync(this);
-
             if (map != null) {
-                setUpMap();
+                if(params.size() == 5){
+                    //Los únicos parámetros recibidos se refieren a un POI en concreto
+                    setUpMapPOI();
+                } else{
+                    //Se tiene que mostrar el mapa centrado en la ubicación del usuario junto con los POI cercanos
+                    setUpMapUser();
+                }
             }
         }
     }
@@ -117,14 +118,56 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        setUpMap();
+
+        if(params.size() == 5){
+            //Los únicos parámetros recibidos se refieren a un POI en concreto
+            setUpMapPOI();
+        } else{
+            //Se tiene que mostrar el mapa centrado en la ubicación del usuario junto con los POI cercanos
+            setUpMapUser();
+        }
     }
 
-    /**
-     * Utilizamos este metodo para trabajar con el mapa
-     * Podemos añadir marcadores
-     */
-    private void setUpMap() {
+    /*
+    * Método que se encarga de mostrar un mapa centrado en la ubicación del POI.
+    * Además muestra la ubicación del usuario
+    * */
+    private void setUpMapPOI(){
+
+        String nombre = params.getString("POI_NOMBRE");
+        double latitud = params.getDouble("POI_LATITUD");
+        double longitud = params.getDouble("POI_LONGITUD");
+        String enlace = params.getString("POI_URL");
+
+        Bundle usuario = ((MainActivity) getActivity()).obtenerArgumentos();
+        double latitudUsuario = usuario.getDouble("latitudGPS");
+        double longitudUsuario = usuario.getDouble("longitudGPS");
+
+        LatLng poi = new LatLng(latitud, longitud);
+        map.addMarker(new MarkerOptions().position(poi).title(nombre));
+        map.moveCamera(CameraUpdateFactory.newLatLng(poi));
+
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitud, longitud),13));
+
+        //Ubicación del usuario
+        LatLng miUbicacion = new LatLng(latitudUsuario ,longitudUsuario);
+
+        // Centramos el mapa a la posicion del usuario
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(poi)
+                .zoom(17)
+                .build();
+
+        //Añadimos marcador a nuestra posicion
+        map.addMarker(new MarkerOptions().position(miUbicacion).title("AQUI ESTAS TU").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
+    /*
+     * Método que se encarga de mostrar un mapa centrado en la posición del usuario, y las ubicaciones
+     * de los POI cercanos
+     * */
+    private void setUpMapUser() {
 
         //Metemos en un string el json que recibe del MainActivity
         String jSonCoords = params.getString("jSonCoords");
@@ -132,10 +175,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         //Metemos en un double las coordenadas del movil
         double e1 = params.getDouble("latitudGPS");
         double e2 = params.getDouble("longitudGPS");
-
-        Log.e(TAG, "JSON: " + jSonCoords);
-        Log.e(TAG, "Latitud: " + e1);
-        Log.e(TAG, "Longitud: " + e2);
 
         if (jSonCoords != null) {
 
@@ -178,9 +217,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                     .zoom(17)
                     .build();
             //Añadimos marcador a nuestra posicion
-            LatLng miubicacion = new LatLng(e1,e2);
-            map.addMarker(new MarkerOptions().position(miubicacion).title("AQUI ESTAS TU").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            LatLng miUbicacion = new LatLng(e1,e2);
+            map.addMarker(new MarkerOptions().position(miUbicacion).title("AQUI ESTAS TU").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
             map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
     }

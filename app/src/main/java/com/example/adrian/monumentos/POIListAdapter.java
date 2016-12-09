@@ -10,22 +10,27 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 
-public class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHolder> {
+class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHolder> {
 
     private final ArrayList<POI> poiList;
     private final Context context;
     private final POIListFragment poiListFragment;
     private final GlobalState globalState;
 
-    public final static String POI_URL = "POI_URL";
+    private final static String POI = "POI";
+    final static String POI_URL = "POI_URL";
+    private final static String POI_NOMBRE = "POI_NOMBRE";
+    private final static String POI_LATITUD = "POI_LATITUD";
+    private final static String POI_LONGITUD = "POI_LONGITUD";
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
 
         //Elementos de una CardView
         private final TextView tituloPoi, descripcionPoi;
@@ -44,7 +49,7 @@ public class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHold
         }
     }
 
-    public POIListAdapter (Context context, POIListFragment poiListFragment){
+    POIListAdapter(Context context, POIListFragment poiListFragment){
         this.context = context;
         this.poiListFragment = poiListFragment;
         this.globalState = (GlobalState) context.getApplicationContext();
@@ -67,7 +72,7 @@ public class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
-        String nombrePoi = poiList.get(position).getNombre();
+        final String nombrePoi = poiList.get(position).getNombre();
         String descripcionPoi = poiList.get(position).getDescripcion();
         String urlImagenPoi = poiList.get(position).getUrl_imagen();
         final String enlacePoi = poiList.get(position).getEnlace();
@@ -88,6 +93,34 @@ public class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHold
                     transaction.commit();
                 }
             });
+        }
+
+        final double latitudPoi = poiList.get(position).getLatitud();
+        final double longitudPoi = poiList.get(position).getLongitud();
+
+        // Añadimos otro evento Listener al botón "Ir al mapa" para redirigir al mapa centrado en la ubicación del POI
+        if ((latitudPoi != 0.0) && (longitudPoi != 0.0)) {
+            holder.irAlMapa.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    MapFragment mapFragment = new MapFragment();
+                    Bundle params = new Bundle();
+                    params.putString(POI, "POI");
+                    params.putString(POI_NOMBRE, nombrePoi);
+                    params.putDouble(POI_LATITUD, latitudPoi);
+                    params.putDouble(POI_LONGITUD, longitudPoi);
+                    params.putString(POI_URL, enlacePoi);
+                    mapFragment.setArguments(params);
+
+                    FragmentTransaction transaction = poiListFragment.getFragmentManager().beginTransaction();
+                    transaction.replace(R.id.content_frame, mapFragment);
+                    transaction.addToBackStack(null);
+                    transaction.commit();
+                }
+            });
+        }
+        else {
+            Toast.makeText(context, "No se ha podido obtener la ubicación de este punto de interés", Toast.LENGTH_LONG).show();
         }
 
 
