@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     /**
      * Crea la vista
-     * @param savedInstanceState
+     * @param savedInstanceState Bundle
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,8 +126,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         //Fragmento inicial "Home" de la App
         final HomeFragment homeFragment = new HomeFragment();
-        //Fragmento de informacion
-        final Fragment1 fragment = new Fragment1();
         getFragmentManager().beginTransaction().add(R.id.content_frame, homeFragment).commit();
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -136,32 +134,26 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         //Hay que asegurarse de que se han obtenido correctamente las coordenadas del GPS
         obtenerCoordenadasGPS();
 
-
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-               // boolean fragmentTransaction = false;
-               // Fragment fragment = null;
-                // Intent IrMapa = new Intent(MainActivity.this,Maps.class);
-                Intent i = new Intent(MainActivity.this, Maps.class);
 
-            //menu
+                //Menú
                 switch (item.getItemId()) {
                     case R.id.menu_inicio:
 
-                        getFragmentManager().beginTransaction().replace(R.id.content_frame, homeFragment).commit();
-
+                        getFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.content_frame, homeFragment)
+                                .commit();
 
                         break;
 
                     case R.id.menu_ayuda:
-
-
-                      //  fragmentTransaction = true;
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.content_frame, fragment)
-                                .commit();
+                        //getSupportFragmentManager().beginTransaction()
+                        //       .replace(R.id.content_frame, fragment)
+                        //      .commit();
 
                         break;
 
@@ -178,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         getFragmentManager()
                                 .beginTransaction()
                                 .replace(R.id.content_frame, poiListFragment)
-                                .addToBackStack(null)
+                                .addToBackStack("POIListFragment")
                                 .commit();
 
                         break;
@@ -192,27 +184,28 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         else
                             Toast.makeText(MainActivity.this, "Obteniendo puntos de interés...", Toast.LENGTH_SHORT).show();
 
-                        //pasando parametros a otra actividad
-                        i.putExtra("jSonCoords",jSonCoords);
-                        i.putExtra("latitudGPS",latitudGPS);
-                        i.putExtra("longitudGPS", longitudGPS);
+                        MapFragment mapFragment = new MapFragment();
 
-                        startActivity(i);
+                        //Almacenamos los datos necesarios para la utilización de MapFragment
+                        Bundle params = new Bundle();
+
+                        params.putString("jSonCoords",jSonCoords);
+                        params.putDouble("latitudGPS",latitudGPS);
+                        params.putDouble("longitudGPS", longitudGPS);
+
+                        //Paso de parámetros al MapFragment
+                        mapFragment.setArguments(params);
+
+                        getFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.content_frame, mapFragment)
+                                .addToBackStack("MapFragment")
+                                .commit();
+
                         break;
 
 
                 }
-                //se sustituye el contenido
-              /*  if (fragmentTransaction) {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.content_frame, fragment)
-                            .addToBackStack(null)
-                            .commit();
-
-                    item.setChecked(true);
-                    getSupportActionBar().setTitle(item.getTitle());
-                }*/
-
                 drawerLayout.closeDrawers();
 
                 return true;
@@ -233,8 +226,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         /**
          *
-         * @param params
-         * @return
+         * @param params Params
          */
         @Override
         protected Void doInBackground(Void... params) {
@@ -383,7 +375,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             // Request location updates
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
-                    locationRequest, this);
+                      locationRequest, this);
         }
     }
 
@@ -514,6 +506,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Toast.makeText(this, "Obteniendo coordenadas GPS...", Toast.LENGTH_SHORT).show();
         mGoogleApiClient.reconnect();
 
+    }
+
+    /*Método que obtiene los datos necesarios para MapFragment*/
+    public Bundle obtenerArgumentos(){
+        //Almacenamos los datos necesarios para la utilización de HomeFragment
+        Bundle params = new Bundle();
+
+        params.putString("jSonCoords",jSonCoords);
+        params.putDouble("latitudGPS",latitudGPS);
+        params.putDouble("longitudGPS", longitudGPS);
+
+        return params;
     }
 
 

@@ -2,19 +2,17 @@ package com.example.adrian.monumentos;
 
 import android.app.DialogFragment;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
-import com.google.android.gms.maps.MapFragment;
 
 /**
  * Esta clase
@@ -28,6 +26,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private Bundle params;
     private Button ubicacion;
+    private String TAG;
 
     //Constructor por defecto
     public HomeFragment(){}
@@ -43,7 +42,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         View vista = inflater.inflate(R.layout.home_fragment, container, false);
 
-        params = new Bundle();
+        params = getArguments();
+        TAG = getActivity().getClass().getSimpleName();
 
         ubicacion = (Button) vista.findViewById(R.id.buscarPorUbicacion);
 
@@ -52,11 +52,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         return vista;
     }
 
+
+
     /**
      * Called when a fragment is first attached to its context.
      * {@link #onCreate(Bundle)} will be called after this.
      *
-     * @param context
+     * @param context Context
      */
     @Override
     public void onAttach(Context context) { super.onAttach(context); }
@@ -110,24 +112,24 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private void mostrarMapa(){
 
-        //Si no se han obtenido bien las coordenadas GPS, volver a solicitarlas
-        if((((MainActivity) this.getActivity()).getLatitudGPS() == 0.0)
-                && (((MainActivity) this.getActivity()).getLongitudGPS() == 0.0)){
-            ((MainActivity) this.getActivity()).obtenerCoordenadasGPS();
-        }
+        Bundle argumentos = ((MainActivity) getActivity()).obtenerArgumentos();
 
-        params.putDouble("latitud", ((MainActivity) this.getActivity()).getLatitudGPS());
-        params.putDouble("longitud", ((MainActivity) this.getActivity()).getLongitudGPS());
+        try{
+            if(params.getString("Error") != null)
+                argumentos.putString("Error", params.getString("Error"));
+        } catch (NullPointerException e){
+            Log.e(TAG, "Un error inesperado ocurrió: " + e.getMessage());
+        }
 
         //Creación de un nuevo Fragmento Mapa
         MapFragment mapFragment = new MapFragment();
-        mapFragment.setArguments(params);
+        mapFragment.setArguments(argumentos);
 
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.content_frame, mapFragment);
-        transaction.addToBackStack("MapFragmentPOI");
-
-        transaction.commit();
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content_frame, mapFragment)
+                .addToBackStack("MapFragmentPOI")
+                .commit();
     }
 
 }
