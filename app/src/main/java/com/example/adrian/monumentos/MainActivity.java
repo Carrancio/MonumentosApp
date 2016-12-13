@@ -2,6 +2,7 @@ package com.example.adrian.monumentos;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -71,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     //El número máximo de POI se debe recoger del usuario
     private int maxPOI = 500;
 
-
     private GoogleApiClient mGoogleApiClient;
 
     // Request code to use when launching the resolution activity
@@ -86,6 +86,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     private static final int LOCATION_INTERVAL = 1000;
 
+    private GETPOIs getpoIs = null;
+
+    private ProgressDialog progressDialog;
 
     /**
      * Crea la vista
@@ -108,6 +111,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
 
         idioma = Locale.getDefault().getLanguage();
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Obteniendo datos necesarios. Por favor, espere...");
 
         mResolvingError = savedInstanceState != null
                 && savedInstanceState.getBoolean(STATE_RESOLVING_ERROR, false);
@@ -208,6 +214,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     private class GETPOIs extends AsyncTask<Void, Void, Void> {
 
+        private GlobalState globalState = (GlobalState) MainActivity.this.getApplicationContext();
+        private ProgressDialog progressDialog;
+
+        GETPOIs(ProgressDialog progressDialog){ this.progressDialog = progressDialog; }
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog.show();
+            super.onPreExecute();
+        }
+
         /**
          *
          * @param params Params
@@ -305,11 +322,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             } catch (Exception e) {
                 Log.e(TAG, "Un error inesperado ocurrió: " + e.getMessage());
             }
-
-            GlobalState globalState = (GlobalState) MainActivity.this.getApplicationContext();
             globalState.setListaPOIs(listaPOIs);
 
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            progressDialog.dismiss();
+            super.onPostExecute(aVoid);
         }
     }
 
@@ -340,7 +361,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 latitudGPS = location.getLatitude();
                 longitudGPS = location.getLongitude();
 
-                new GETPOIs().execute();
+                getpoIs = new GETPOIs(progressDialog);
+                getpoIs.execute();
             }
         }
     }
@@ -366,7 +388,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_LOCATION) {
@@ -391,7 +412,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
         permissionRequestDone = true;
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -488,12 +508,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     /*Método encargado de comprobar si se han obtenido ya las coordenadas GPS y, en caso contrario, obtenerlas*/
-    public void obtenerCoordenadasGPS(){
-
-        Toast.makeText(this, "Obteniendo coordenadas GPS...", Toast.LENGTH_SHORT).show();
-        mGoogleApiClient.reconnect();
-
-    }
+    public void obtenerCoordenadasGPS(){ mGoogleApiClient.reconnect(); }
 
     /*Método que obtiene los datos necesarios para MapFragment*/
     public Bundle obtenerArgumentos(){
@@ -506,13 +521,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         return params;
     }
 
-
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
         outState.putBoolean(STATE_RESOLVING_ERROR, mResolvingError);
     }
-
 
     @Override
     public void onLocationChanged(Location location) {
@@ -521,13 +534,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         longitudGPS = location.getLongitude();
 
         if((latitudGPS != 0.0) && (longitudGPS != 0.0)){
-            new GETPOIs().execute();
+            new GETPOIs(progressDialog).execute();
 
             // Disconnecting the client invalidates it.
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
     }
-
 
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -579,9 +591,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if((latitudGPS == 0.0) && (longitudGPS == 0.0)){
             obtenerCoordenadasGPS();
         }
-        else
-            Toast.makeText(MainActivity.this, "Obteniendo puntos de interés...", Toast.LENGTH_SHORT).show();
-
 
         if((latitudGPS == 0.0) && (longitudGPS == 0.0)) {
             /* Si aún después de un segundo intento, se sigue sin haber podido obtener las coordenadas del GPS, utilizar
