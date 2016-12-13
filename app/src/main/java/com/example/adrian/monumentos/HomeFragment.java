@@ -42,7 +42,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         View vista = inflater.inflate(R.layout.home_fragment, container, false);
 
-        params = getArguments();
+        params = new Bundle();
         TAG = getActivity().getClass().getSimpleName();
 
         ubicacion = (Button) vista.findViewById(R.id.buscarPorUbicacion);
@@ -120,6 +120,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         } catch (NullPointerException e){
             Log.e(TAG, "Un error inesperado ocurrió: " + e.getMessage());
         }
+
+        argumentos.putString("Origen", "HomeFragment");
 
         //Creación de un nuevo Fragmento Mapa
         MapFragment mapFragment = new MapFragment();

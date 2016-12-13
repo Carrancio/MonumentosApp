@@ -47,7 +47,6 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
 
-    private boolean hasPermission;
     private boolean permissionRequestDone = false;
 
     DrawerLayout drawerLayout;
@@ -96,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        hasPermission = hasPermisosUbicacion();
+        boolean hasPermission = hasPermisosUbicacion();
 
         //Solicitar permisos de ubicación en caso de no tenerlos
         if(!hasPermission){
@@ -130,6 +129,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.navview);
+
+        //Aparecer en "Inicio" al abrir la aplicación
+        navigationView.getMenu().getItem(0).setChecked(true);
 
         //Hay que asegurarse de que se han obtenido correctamente las coordenadas del GPS
         obtenerCoordenadasGPS();
@@ -186,14 +188,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                         MapFragment mapFragment = new MapFragment();
 
-                        //Almacenamos los datos necesarios para la utilización de MapFragment
                         Bundle params = new Bundle();
+                        params.putString("Origen", "MainActivity");
 
-                        params.putString("jSonCoords",jSonCoords);
-                        params.putDouble("latitudGPS",latitudGPS);
-                        params.putDouble("longitudGPS", longitudGPS);
-
-                        //Paso de parámetros al MapFragment
                         mapFragment.setArguments(params);
 
                         getFragmentManager()
@@ -513,7 +510,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         //Almacenamos los datos necesarios para la utilización de HomeFragment
         Bundle params = new Bundle();
 
-        params.putString("jSonCoords",jSonCoords);
         params.putDouble("latitudGPS",latitudGPS);
         params.putDouble("longitudGPS", longitudGPS);
 
@@ -541,13 +537,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
     }
-
-
-    public double getLatitudGPS() { return latitudGPS; }
-
-    public double getLongitudGPS() { return longitudGPS; }
-
-
 
 
     public boolean onOptionsItemSelected(MenuItem item) {

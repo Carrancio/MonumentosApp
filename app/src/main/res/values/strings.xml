@@ -10,6 +10,8 @@
     <string name="imagen_poi">Imagen POI</string>
     <string name="buscar_monumentos_boton">Buscar alrededor de mi posición</string>
     <string name="titulo">Titulo</string>
+    <string name="descripcion">Descripción</string>
+    <string name="subdescripcion">Sub-descripción</string>
 
 
     <string name="error_activar_GPS_1">Por favor, active el GPS.</string>

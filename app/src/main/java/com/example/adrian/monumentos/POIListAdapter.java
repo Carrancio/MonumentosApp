@@ -24,11 +24,8 @@ class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHolder> {
     private final POIListFragment poiListFragment;
     private final GlobalState globalState;
 
-    private final static String POI = "POI";
     final static String POI_URL = "POI_URL";
     private final static String POI_NOMBRE = "POI_NOMBRE";
-    private final static String POI_LATITUD = "POI_LATITUD";
-    private final static String POI_LONGITUD = "POI_LONGITUD";
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -73,7 +70,7 @@ class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
 
         final String nombrePoi = poiList.get(position).getNombre();
-        String descripcionPoi = poiList.get(position).getDescripcion();
+        final String descripcionPoi = poiList.get(position).getDescripcion();
         String urlImagenPoi = poiList.get(position).getUrl_imagen();
         final String enlacePoi = poiList.get(position).getEnlace();
 
@@ -105,11 +102,8 @@ class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHolder> {
                 public void onClick(View view) {
                     MapFragment mapFragment = new MapFragment();
                     Bundle params = new Bundle();
-                    params.putString(POI, "POI");
+                    params.putString("Origen", "POIListAdapter");
                     params.putString(POI_NOMBRE, nombrePoi);
-                    params.putDouble(POI_LATITUD, latitudPoi);
-                    params.putDouble(POI_LONGITUD, longitudPoi);
-                    params.putString(POI_URL, enlacePoi);
                     mapFragment.setArguments(params);
 
                     FragmentTransaction transaction = poiListFragment.getFragmentManager().beginTransaction();
@@ -147,8 +141,6 @@ class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHolder> {
                     .centerCrop()
                     .into(holder.imagenPoi);
         }
-
- /* url = PREFIJO_URL + idioma + WIKIPEDIA_URL + URLEncoder.encode(this.poiList.get(position), "UTF-8").replace('+', ' '); */
     }
 
 

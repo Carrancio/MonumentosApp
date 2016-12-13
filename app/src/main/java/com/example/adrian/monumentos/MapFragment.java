@@ -4,24 +4,21 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import org.osmdroid.api.IMapController;
+import org.osmdroid.events.MapEventsReceiver;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.MapEventsOverlay;
+import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.infowindow.InfoWindow;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.ArrayList;
 
 /**
  * Esta clase muestra un mapa con las posiciones de los monumentos y nuestra posicion
@@ -30,12 +27,15 @@ import org.json.JSONObject;
  * @author David Carrancio Aguado
  *
  */
-public class MapFragment extends Fragment implements OnMapReadyCallback{
+public class MapFragment extends Fragment implements MapEventsReceiver, Marker.OnMarkerClickListener{
 
+    private final static String POI_NOMBRE = "POI_NOMBRE";
     private Bundle params;
+    private double latitudGPS, longitudGPS;
 
-    private GoogleMap map;
     private MapView mapView;
+
+    private GlobalState globalState;
 
     //Constructor por defecto
     public MapFragment(){}
@@ -64,6 +64,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         params = getArguments();
+        globalState = (GlobalState) getActivity().getApplication();
     }
 
     /**
@@ -90,137 +91,137 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
         View vista = inflater.inflate(R.layout.map_fragment, container, false);
 
-        MapsInitializer.initialize(getActivity());
         mapView = (MapView) vista.findViewById(R.id.map);
 
-        mapView.onCreate(params);
+        //Almacenamos las coordenadas del GPS del usuario
+        Bundle usuario = ((MainActivity) getActivity()).obtenerArgumentos();
+        latitudGPS = usuario.getDouble("latitudGPS");
+        longitudGPS = usuario.getDouble("longitudGPS");
 
-        setUpMapIfNeeded();
+        mapView.setTileSource(TileSourceFactory.MAPNIK);
+        mapView.setBuiltInZoomControls(true);
+        mapView.setMultiTouchControls(true);
+        mapView.setTilesScaledToDpi(true);
+
+        if(params.getString("Origen").equals("POIListAdapter"))
+            mostrarMapaPOI();
+        else
+            mostrarMapaUsuario();
 
         return vista;
-    }
-
-    private void setUpMapIfNeeded() {
-        if (map == null) {
-            mapView.getMapAsync(this);
-            if (map != null) {
-                if(params.size() == 5){
-                    //Los únicos parámetros recibidos se refieren a un POI en concreto
-                    setUpMapPOI();
-                } else{
-                    //Se tiene que mostrar el mapa centrado en la ubicación del usuario junto con los POI cercanos
-                    setUpMapUser();
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        map = googleMap;
-
-        if(params.size() == 5){
-            //Los únicos parámetros recibidos se refieren a un POI en concreto
-            setUpMapPOI();
-        } else{
-            //Se tiene que mostrar el mapa centrado en la ubicación del usuario junto con los POI cercanos
-            setUpMapUser();
-        }
     }
 
     /*
     * Método que se encarga de mostrar un mapa centrado en la ubicación del POI.
     * Además muestra la ubicación del usuario
     * */
-    private void setUpMapPOI(){
+    private void mostrarMapaPOI(){
 
-        String nombre = params.getString("POI_NOMBRE");
-        double latitud = params.getDouble("POI_LATITUD");
-        double longitud = params.getDouble("POI_LONGITUD");
-        String enlace = params.getString("POI_URL");
+        String nombrePoi = params.getString(POI_NOMBRE);
+        ArrayList<POI> listaPOIs = globalState.getListaPOIs();
+        POI poi = null;
 
-        Bundle usuario = ((MainActivity) getActivity()).obtenerArgumentos();
-        double latitudUsuario = usuario.getDouble("latitudGPS");
-        double longitudUsuario = usuario.getDouble("longitudGPS");
+        for(POI p : listaPOIs){
+            if(nombrePoi.equals(p.getNombre())) {
+                poi = p;
+                break;
+            }
+        }
 
-        LatLng poi = new LatLng(latitud, longitud);
-        map.addMarker(new MarkerOptions().position(poi).title(nombre));
-        map.moveCamera(CameraUpdateFactory.newLatLng(poi));
+        double latitud = poi.getLatitud();
+        double longitud = poi.getLongitud();
+        String descripcion = poi.getDescripcion();
 
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitud, longitud),13));
+        GeoPoint point = new GeoPoint(latitud, longitud);
+
+        IMapController iMapController = mapView.getController();
+        iMapController.setZoom(14);
+        iMapController.setCenter(point);
+
+        Marker marker = new Marker(mapView);
+        marker.setTitle(nombrePoi);
+        marker.setSnippet(descripcion);
+        marker.setPosition(point);
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        marker.setRelatedObject(poi);
+        marker.setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.marker_icon_poi));
+
+        InfoBubble infoBubble =  new InfoBubble(mapView, this);
+        marker.setInfoWindow(infoBubble);
+
+        mapView.getOverlays().add(marker);
 
         //Ubicación del usuario
-        LatLng miUbicacion = new LatLng(latitudUsuario ,longitudUsuario);
+        GeoPoint miUbicacion = new GeoPoint(latitudGPS ,longitudGPS);
 
-        // Centramos el mapa a la posicion del usuario
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(poi)
-                .zoom(17)
-                .build();
+        Marker user = new Marker(mapView);
+        user.setTitle("ESTA ES TU UBICACIÓN");
+        user.setPosition(miUbicacion);
+        user.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        user.setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.marker_user_icon));
 
-        //Añadimos marcador a nuestra posicion
-        map.addMarker(new MarkerOptions().position(miUbicacion).title("AQUI ESTAS TU").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        mapView.getOverlays().add(user);
+
+        marker.showInfoWindow();
+
+        mapView.invalidate();
+
+        MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(this);
+        mapView.getOverlays().add(0, mapEventsOverlay);
+
+        user.setOnMarkerClickListener(this);
     }
 
     /*
      * Método que se encarga de mostrar un mapa centrado en la posición del usuario, y las ubicaciones
      * de los POI cercanos
      * */
-    private void setUpMapUser() {
+    private void mostrarMapaUsuario() {
 
-        //Metemos en un string el json que recibe del MainActivity
-        String jSonCoords = params.getString("jSonCoords");
+        ArrayList<POI> listaPOIs = globalState.getListaPOIs();
 
-        //Metemos en un double las coordenadas del movil
-        double e1 = params.getDouble("latitudGPS");
-        double e2 = params.getDouble("longitudGPS");
+        InfoBubble infoBubble =  new InfoBubble(mapView, this);
 
-        if (jSonCoords != null) {
+        //Añadir marcadores al mapa con la información de cada POI
+        for (POI poi : listaPOIs) {
+            GeoPoint geoPoint = new GeoPoint(poi.getLatitud(), poi.getLongitud());
 
-            try {
-                JSONObject jsonObj = new JSONObject(jSonCoords);
+            Marker marker = new Marker(mapView);
+            marker.setTitle(poi.getNombre());
+            marker.setSnippet(poi.getDescripcion());
+            marker.setPosition(geoPoint);
+            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+            marker.setRelatedObject(poi);
+            marker.setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.marker_icon_poi));
 
-                JSONArray geosearch = jsonObj.getJSONArray("geosearch");
+            marker.setInfoWindow(infoBubble);
 
-                //añadir marcadores con las coordenadas de cada monumento y su nombre
-
-                for (int i = 0; i < geosearch.length(); i++) {
-                    JSONObject c = geosearch.getJSONObject(i);
-                    String lat = c.getString("lat");
-                    String lon = c.getString("lon");
-                    String title = c.getString("title");
-                    double lat1 = Double.parseDouble(lat);
-                    double lon1 = Double.parseDouble(lon);
-
-                    LatLng aAñadir = new LatLng(lat1, lon1);
-                    map.addMarker(new MarkerOptions().position(aAñadir).title(title));
-                    map.moveCamera(CameraUpdateFactory.newLatLng(aAñadir));
-                }
-            } catch (final JSONException e) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getActivity().getApplicationContext(),
-                                "Json parsing error: " + e.getMessage(),
-                                Toast.LENGTH_LONG).show();
-                    }
-                });
-
-            }
-
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(e1,e2),13));
-
-            // Centramos el mapa a la posicion del usuario
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(new LatLng(e1,e2))
-                    .zoom(17)
-                    .build();
-            //Añadimos marcador a nuestra posicion
-            LatLng miUbicacion = new LatLng(e1,e2);
-            map.addMarker(new MarkerOptions().position(miUbicacion).title("AQUI ESTAS TU").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            mapView.getOverlays().add(marker);
         }
+
+        //Ubicación del usuario
+        GeoPoint miUbicacion = new GeoPoint(latitudGPS ,longitudGPS);
+
+        Marker user = new Marker(mapView);
+        user.setTitle("ESTA ES TU UBICACIÓN");
+        user.setPosition(miUbicacion);
+        user.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        user.setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.marker_user_icon));
+
+        mapView.getOverlays().add(user);
+
+        IMapController iMapController = mapView.getController();
+        iMapController.setZoom(14);
+        iMapController.setCenter(miUbicacion);
+
+        user.showInfoWindow();
+
+        mapView.invalidate();
+
+        MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(this);
+        mapView.getOverlays().add(0, mapEventsOverlay);
+
+        user.setOnMarkerClickListener(this);
     }
 
     /**
@@ -242,20 +243,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     public void onDetach() { super.onDetach(); }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mapView.onResume();
+    public boolean singleTapConfirmedHelper(GeoPoint geoPoint) {
+        InfoWindow.closeAllInfoWindowsOn(mapView);
+        return true;
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        mapView.onPause();
+    public boolean longPressHelper(GeoPoint geoPoint) {
+        //No hacer nada. No capturamos este tipo de eventos
+        return false;
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
+    public boolean onMarkerClick(Marker marker, MapView mapView) {
+        InfoWindow.closeAllInfoWindowsOn(mapView);
+
+        //Mostrar infoWindow del Marker y centrar en su posición
+        marker.showInfoWindow();
+        mapView.getController().animateTo(marker.getPosition());
+
+        return true;
     }
 }
