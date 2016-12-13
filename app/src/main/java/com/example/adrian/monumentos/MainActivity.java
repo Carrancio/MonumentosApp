@@ -2,11 +2,15 @@ package com.example.adrian.monumentos;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -52,16 +56,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     DrawerLayout drawerLayout;
     NavigationView navigationView;
 
-    private String HTTPS = "https://";
     private String idioma;
-    private String WIKI_URL = ".wikipedia.org/w/api.php?action=query&format=json";
     private String TAG = MainActivity.class.getSimpleName();
 
     private double latitudGPS;
     private double longitudGPS;
-    private String jSonCoords;
 
-    private Location location;
+    private double latitudPorDefecto = 41.662826;
+    private double longitudPorDefecto = -4.705388;
 
     //El radio se debe recoger del usuario
     private int radio = 1000;
@@ -82,7 +84,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private static final String STATE_RESOLVING_ERROR = "resolving_error";
     private static final int REQUEST_LOCATION = 2;
 
-    private LocationRequest locationRequest;
     private static final int LOCATION_INTERVAL = 1000;
 
 
@@ -152,56 +153,42 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                         break;
 
-                    case R.id.menu_ayuda:
-                        //getSupportFragmentManager().beginTransaction()
-                        //       .replace(R.id.content_frame, fragment)
-                        //      .commit();
-
-                        break;
-
                     case R.id.menu_monumentos:
 
-                        if((latitudGPS == 0.0) && (longitudGPS == 0.0)){
-                            obtenerCoordenadasGPS();
-                            Toast.makeText(MainActivity.this, "No se han encontrado datos de puntos de interés cercanos a su posición", Toast.LENGTH_SHORT).show();
-                        }
-                        else
-                            Toast.makeText(MainActivity.this, "Obteniendo puntos de interés...", Toast.LENGTH_SHORT).show();
+                        //Primero comprobamos que tanto el GPS como la conexión a Internet están activados
+                        if(isGPSAndInternetEnabled()) {
 
-                        POIListFragment poiListFragment = new POIListFragment();
-                        getFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.content_frame, poiListFragment)
-                                .addToBackStack("POIListFragment")
-                                .commit();
+                            //Comprobamos que se disponen de las coordenadas antes de crear el fragmento
+                            comprobarObtencionCoordenadas();
+
+                            POIListFragment poiListFragment = new POIListFragment();
+                            getFragmentManager()
+                                    .beginTransaction()
+                                    .replace(R.id.content_frame, poiListFragment)
+                                    .addToBackStack("POIListFragment")
+                                    .commit();
+                        }
 
                         break;
 
                     case R.id.menu_mapa:
 
-                        if((latitudGPS == 0.0) && (longitudGPS == 0.0)){
-                            obtenerCoordenadasGPS();
-                            Toast.makeText(MainActivity.this, "No se han encontrado datos de puntos de interés cercanos a su posición", Toast.LENGTH_SHORT).show();
+                        //Primero comprobamos que tanto el GPS como la conexión a Internet están activados
+                        if(isGPSAndInternetEnabled()) {
+
+                            mostrarMapa();
                         }
-                        else
-                            Toast.makeText(MainActivity.this, "Obteniendo puntos de interés...", Toast.LENGTH_SHORT).show();
-
-                        MapFragment mapFragment = new MapFragment();
-
-                        Bundle params = new Bundle();
-                        params.putString("Origen", "MainActivity");
-
-                        mapFragment.setArguments(params);
-
-                        getFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.content_frame, mapFragment)
-                                .addToBackStack("MapFragment")
-                                .commit();
 
                         break;
 
+                    case R.id.menu_ayuda:
 
+                        //navigationView.getMenu().getItem(3).setChecked(true);
+                        //getSupportFragmentManager().beginTransaction()
+                        //       .replace(R.id.content_frame, fragment)
+                        //      .commit();
+
+                        break;
                 }
                 drawerLayout.closeDrawers();
 
@@ -234,11 +221,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             HttpHandler handler = new HttpHandler();
 
+            String HTTPS = "https://";
+            String WIKI_URL = ".wikipedia.org/w/api.php?action=query&format=json";
+
             //Petición a la API de Wikipedia y almacenamiento de la respuesta
             String urlCoords = HTTPS + idioma + WIKI_URL + "&list=geosearch&gscoord=" +
                     latitudGPS + "%7C" + longitudGPS + "&gsradius=" + radio + "&gslimit=" + maxPOI;
 
-            jSonCoords = handler.makeServiceCall(urlCoords);
+            String jSonCoords = handler.makeServiceCall(urlCoords);
             String jSonExtract, jSonImage;
 
             //Eliminiación de la cabecera del primer JSON (28 caracteres)
@@ -344,7 +334,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         else {
             startLocationUpdates();
 
-            location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
             if(location != null) {
                 latitudGPS = location.getLatitude();
@@ -365,14 +355,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
         else {
             // Crea la localicacion
-            locationRequest = LocationRequest.create()
+            LocationRequest locationRequest = LocationRequest.create()
                     .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                     .setInterval(LOCATION_INTERVAL)
                     .setFastestInterval(LOCATION_INTERVAL);
 
             // Request location updates
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
-                      locationRequest, this);
+                    locationRequest, this);
         }
     }
 
@@ -565,4 +555,80 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         return super.onPrepareOptionsMenu(menu);
     }
 
+    public void mostrarMapa(){
+
+        //Comprobamos que se disponen de las coordenadas antes de crear el fragmento
+        comprobarObtencionCoordenadas();
+
+        MapFragment mapFragment = new MapFragment();
+
+        Bundle params = new Bundle();
+        params.putString("Origen", "MainActivity");
+
+        mapFragment.setArguments(params);
+
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content_frame, mapFragment)
+                .addToBackStack("MapFragment")
+                .commit();
+    }
+
+    private void comprobarObtencionCoordenadas(){
+        //Primera comprobación de que se han obtenido las coordenadas del GPS
+        if((latitudGPS == 0.0) && (longitudGPS == 0.0)){
+            obtenerCoordenadasGPS();
+        }
+        else
+            Toast.makeText(MainActivity.this, "Obteniendo puntos de interés...", Toast.LENGTH_SHORT).show();
+
+
+        if((latitudGPS == 0.0) && (longitudGPS == 0.0)) {
+            /* Si aún después de un segundo intento, se sigue sin haber podido obtener las coordenadas del GPS, utilizar
+             * las coordenadas por defecto (latitudPorDefecto, longitudPorDefecto) antes de crear el fragmento
+             */
+            latitudGPS = latitudPorDefecto;
+            longitudGPS = longitudPorDefecto;
+
+            //Volvemos a conectar para obtener los monumentos asociados a estas coordenadas
+            obtenerCoordenadasGPS();
+        }
+    }
+
+    public boolean isGPSAndInternetEnabled(){
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        Bundle params = new Bundle();
+
+        boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        boolean showDialog = false;
+
+        if (networkInfo != null && networkInfo.isConnected())
+            if (gpsEnabled)
+                mostrarMapa();
+            else{
+                showDialog = true;
+
+                params.putString("Error", "GPS");
+            }
+        else {
+            showDialog = true;
+
+            params.putString("Error", "INTERNET");
+        }
+
+        if(showDialog){
+            android.app.DialogFragment errorDialogFragment = new com.example.adrian.monumentos.ErrorDialogFragment();
+            errorDialogFragment.setArguments(params);
+
+            errorDialogFragment.show(getFragmentManager(), "ErrorDialog");
+        }
+
+        return !showDialog;
+    }
+
+    public NavigationView getNavigationView() { return navigationView; }
 }
