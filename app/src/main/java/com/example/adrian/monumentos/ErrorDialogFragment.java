@@ -29,6 +29,21 @@ public class ErrorDialogFragment extends DialogFragment{
                 builder = builder.setMessage(getString(R.string.error_activar_Internet_1) + ' ' + getString(R.string.error_activar_Internet_2));
 
                 break;
+
+            case "MAXPOI":
+                builder = builder.setMessage(R.string.error_maxPOI);
+
+                break;
+
+            case "RADIO":
+                builder = builder.setMessage(R.string.error_radio);
+
+                break;
+
+            case "MAXPOIandRADIO":
+                builder = builder.setMessage(R.string.error_maxPOIandRadio);
+
+                break;
         }
             builder.setPositiveButton(R.string.aceptar_boton, new DialogInterface.OnClickListener() {
                 @Override

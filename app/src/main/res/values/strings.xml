@@ -9,13 +9,20 @@
     <string name="aceptar_boton">Aceptar</string>
     <string name="imagen_poi">Imagen POI</string>
     <string name="buscar_monumentos_boton">Buscar alrededor de mi posición</string>
+    <string name="logo">Logo</string>
     <string name="titulo">Titulo</string>
     <string name="descripcion">Descripción</string>
     <string name="subdescripcion">Sub-descripción</string>
+    <string name="opcionesBusqueda">Opciones de búsqueda (por defecto)</string>
+    <string name="maxPOIDefecto">Máx. POI (30)</string>
+    <string name="rangoBusquedaDefecto">Radio (1 km)</string>
 
 
     <string name="error_activar_GPS_1">Por favor, active el GPS.</string>
     <string name="error_activar_GPS_2">Algunas funcionalidades no pueden utilizarse sin GPS</string>
     <string name="error_activar_Internet_1">Por favor, active la conexión a Internet.</string>
     <string name="error_activar_Internet_2">Esta aplicación no puede funcionar sin una conexión a Internet</string>
+    <string name="error_maxPOI">El valor introducido para \"Máx. POI\" no es válido.\nPor favor, introduzca un número entre 1 y 500</string>
+    <string name="error_radio">El valor introducido para \"Radio\" no es válido.\nPor favor, introduzca un número entre 0.1 y 10</string>
+    <string name="error_maxPOIandRadio">Los valores introducidos para \"Máx. POI\" y \"Radio\" no son válidos.\n\nPor favor, introduzca un número entre 1 y 500 para \"Máx. POI\", y entre 0.1 y 10 para \"Radio\"</string>
 </resources>

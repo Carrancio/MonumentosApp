@@ -63,14 +63,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private double latitudGPS;
     private double longitudGPS;
 
-    private double latitudPorDefecto = 41.662826;
-    private double longitudPorDefecto = -4.705388;
-
-    //El radio se debe recoger del usuario
+    //Radio de búsqueda por defecto (1 km)
     private int radio = 1000;
 
-    //El número máximo de POI se debe recoger del usuario
-    private int maxPOI = 500;
+    //Número máximo de POI por defecto
+    private int maxPOI = 30;
+
+    //Radio de búsqueda introducido por el usuario
+    private int inputRadioBusqueda = -1;
+
+    //Número máximo de POI introducido por el usuario
+    private int inputNMaxPOI = -1;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -85,8 +88,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private static final int REQUEST_LOCATION = 2;
 
     private static final int LOCATION_INTERVAL = 1000;
-
-    private GETPOIs getpoIs = null;
 
     private ProgressDialog progressDialog;
 
@@ -113,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         idioma = Locale.getDefault().getLanguage();
 
         progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Obteniendo datos necesarios. Por favor, espere...");
+        progressDialog.setMessage("Obteniendo los datos necesarios. Por favor, espere...");
 
         mResolvingError = savedInstanceState != null
                 && savedInstanceState.getBoolean(STATE_RESOLVING_ERROR, false);
@@ -216,8 +217,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         private GlobalState globalState = (GlobalState) MainActivity.this.getApplicationContext();
         private ProgressDialog progressDialog;
+        private boolean mostrarMapa, recalcularURL;
 
-        GETPOIs(ProgressDialog progressDialog){ this.progressDialog = progressDialog; }
+        GETPOIs(ProgressDialog progressDialog, boolean mostrarMapa, boolean recalcularURL){
+            this.progressDialog = progressDialog;
+            this.mostrarMapa = mostrarMapa;
+            this.recalcularURL = recalcularURL;
+        }
 
         @Override
         protected void onPreExecute() {
@@ -232,97 +238,99 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         @Override
         protected Void doInBackground(Void... params) {
 
-            ArrayList<POI> listaPOIs = new ArrayList<>();
-            ArrayList<ArrayList<String>> listaPoi = new ArrayList<>();
-            String pageIds = "";
+            if(recalcularURL) {
+                ArrayList<POI> listaPOIs = new ArrayList<>();
+                ArrayList<ArrayList<String>> listaPoi = new ArrayList<>();
+                String pageIds = "";
 
-            HttpHandler handler = new HttpHandler();
+                HttpHandler handler = new HttpHandler();
 
-            String HTTPS = "https://";
-            String WIKI_URL = ".wikipedia.org/w/api.php?action=query&format=json";
+                String HTTPS = "https://";
+                String WIKI_URL = ".wikipedia.org/w/api.php?action=query&format=json";
 
-            //Petición a la API de Wikipedia y almacenamiento de la respuesta
-            String urlCoords = HTTPS + idioma + WIKI_URL + "&list=geosearch&gscoord=" +
-                    latitudGPS + "%7C" + longitudGPS + "&gsradius=" + radio + "&gslimit=" + maxPOI;
+                //Petición a la API de Wikipedia y almacenamiento de la respuesta
+                String urlCoords = HTTPS + idioma + WIKI_URL + "&list=geosearch&gscoord=" +
+                        latitudGPS + "%7C" + longitudGPS + "&gsradius=" + radio + "&gslimit=" + maxPOI;
 
-            String jSonCoords = handler.makeServiceCall(urlCoords);
-            String jSonExtract, jSonImage;
+                String jSonCoords = handler.makeServiceCall(urlCoords);
+                String jSonExtract, jSonImage;
 
-            //Eliminiación de la cabecera del primer JSON (28 caracteres)
-            jSonCoords = jSonCoords.substring(28);
+                //Eliminiación de la cabecera del primer JSON (28 caracteres)
+                jSonCoords = jSonCoords.substring(28);
 
-            try {
-                JSONObject jsonObjectCoords = new JSONObject(jSonCoords);
+                try {
+                    JSONObject jsonObjectCoords = new JSONObject(jSonCoords);
 
-                //Array de JSONs
-                JSONArray geosearch = jsonObjectCoords.getJSONArray("geosearch");
+                    //Array de JSONs
+                    JSONArray geosearch = jsonObjectCoords.getJSONArray("geosearch");
 
-                //Bucle de recorrido del JSONArray con los distintos POIs
-                for (int i = 0; i < geosearch.length(); i++) {
-                    JSONObject object = geosearch.getJSONObject(i);
+                    //Bucle de recorrido del JSONArray con los distintos POIs
+                    for (int i = 0; i < geosearch.length(); i++) {
+                        JSONObject object = geosearch.getJSONObject(i);
 
-                    ArrayList<String> poi = new ArrayList<>();
+                        ArrayList<String> poi = new ArrayList<>();
 
-                    pageIds += object.getString("pageid") + '|';
+                        pageIds += object.getString("pageid") + '|';
 
-                    poi.add(object.getString("pageid"));
-                    poi.add(object.getString("title"));
-                    poi.add(object.getString("lat"));
-                    poi.add(object.getString("lon"));
+                        poi.add(object.getString("pageid"));
+                        poi.add(object.getString("title"));
+                        poi.add(object.getString("lat"));
+                        poi.add(object.getString("lon"));
 
-                    listaPoi.add(poi);
-                }
-
-                //Extraemos el último carácter añadido
-                pageIds = pageIds.substring(0, pageIds.length() - 1);
-
-                for(int j = 0; j < geosearch.length(); j++){
-                    //Segunda petición a la API de WikiPedia para obtener el "extract" de un POI
-                    String urlExtract = HTTPS + idioma + WIKI_URL + "&prop=extracts&exintro=&explaintext=&pageids=" + listaPoi.get(j).get(0);
-
-                    jSonExtract = handler.makeServiceCall(urlExtract);
-
-                    //Obtención del objeto JSON
-                    JSONObject jsonObjectExtract = new JSONObject(jSonExtract);
-
-                    listaPoi.get(j).add(jsonObjectExtract.getJSONObject("query").getJSONObject("pages").getJSONObject(listaPoi.get(j).get(0)).getString("extract"));
-                }
-
-                //Tercera petición a la API de WikiPedia para extraer la URL de la imagen de un POI
-                String urlImage = HTTPS + idioma + WIKI_URL + "&prop=pageprops|info|pageimages&inprop=url&pilimit=50&pithumbsize=560&pageids=" + pageIds;
-
-                jSonImage = handler.makeServiceCall(urlImage);
-
-                //Obtención del objeto JSON
-                JSONObject jsonObjectImage = new JSONObject(jSonImage);
-
-                //Array de JSons
-                JSONObject images = jsonObjectImage.getJSONObject("query").getJSONObject("pages");
-
-
-                //Bucle de recorrido de la lista de POIS para añadir la URL de la imagen y el enlace
-                for (ArrayList<String> nuevoPoi : listaPoi) {
-
-                    try {
-                        //Añadir la URL de la imagen al ArrayList
-                        nuevoPoi.add(images.getJSONObject(nuevoPoi.get(0)).getJSONObject("thumbnail").getString("source"));
-                    } catch (JSONException e){
-                        nuevoPoi.add(null);
+                        listaPoi.add(poi);
                     }
 
-                    //Añadir el enlace al ArrayList
-                    nuevoPoi.add(HTTPS + idioma + ".m.wikipedia.org/wiki?curid=" + nuevoPoi.get(0));
-                }
+                    //Extraemos el último carácter añadido
+                    pageIds = pageIds.substring(0, pageIds.length() - 1);
 
-                //Bucle para crear definitivamente el POI con los datos obtenidos
-                for (ArrayList<String> nuevoPoi : listaPoi) {
-                    listaPOIs.add(new POI(nuevoPoi.get(1), nuevoPoi.get(4), Double.parseDouble(nuevoPoi.get(2)), Double.parseDouble(nuevoPoi.get(3)), nuevoPoi.get(5), nuevoPoi.get(6)));
-                }
+                    for (int j = 0; j < geosearch.length(); j++) {
+                        //Segunda petición a la API de WikiPedia para obtener el "extract" de un POI
+                        String urlExtract = HTTPS + idioma + WIKI_URL + "&prop=extracts&exintro=&explaintext=&pageids=" + listaPoi.get(j).get(0);
 
-            } catch (Exception e) {
-                Log.e(TAG, "Un error inesperado ocurrió: " + e.getMessage());
+                        jSonExtract = handler.makeServiceCall(urlExtract);
+
+                        //Obtención del objeto JSON
+                        JSONObject jsonObjectExtract = new JSONObject(jSonExtract);
+
+                        listaPoi.get(j).add(jsonObjectExtract.getJSONObject("query").getJSONObject("pages").getJSONObject(listaPoi.get(j).get(0)).getString("extract"));
+                    }
+
+                    //Tercera petición a la API de WikiPedia para extraer la URL de la imagen de un POI
+                    String urlImage = HTTPS + idioma + WIKI_URL + "&prop=pageprops|info|pageimages&inprop=url&pilimit=50&pithumbsize=560&pageids=" + pageIds;
+
+                    jSonImage = handler.makeServiceCall(urlImage);
+
+                    //Obtención del objeto JSON
+                    JSONObject jsonObjectImage = new JSONObject(jSonImage);
+
+                    //Array de JSons
+                    JSONObject images = jsonObjectImage.getJSONObject("query").getJSONObject("pages");
+
+
+                    //Bucle de recorrido de la lista de POIS para añadir la URL de la imagen y el enlace
+                    for (ArrayList<String> nuevoPoi : listaPoi) {
+
+                        try {
+                            //Añadir la URL de la imagen al ArrayList
+                            nuevoPoi.add(images.getJSONObject(nuevoPoi.get(0)).getJSONObject("thumbnail").getString("source"));
+                        } catch (JSONException e) {
+                            nuevoPoi.add(null);
+                        }
+
+                        //Añadir el enlace al ArrayList
+                        nuevoPoi.add(HTTPS + idioma + ".m.wikipedia.org/wiki?curid=" + nuevoPoi.get(0));
+                    }
+
+                    //Bucle para crear definitivamente el POI con los datos obtenidos
+                    for (ArrayList<String> nuevoPoi : listaPoi) {
+                        listaPOIs.add(new POI(nuevoPoi.get(1), nuevoPoi.get(4), Double.parseDouble(nuevoPoi.get(2)), Double.parseDouble(nuevoPoi.get(3)), nuevoPoi.get(5), nuevoPoi.get(6)));
+                    }
+
+                } catch (Exception e) {
+                    Log.e(TAG, "Un error inesperado ocurrió: " + e.getMessage());
+                }
+                globalState.setListaPOIs(listaPOIs);
             }
-            globalState.setListaPOIs(listaPOIs);
 
             return null;
         }
@@ -331,6 +339,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         protected void onPostExecute(Void aVoid) {
             progressDialog.dismiss();
             super.onPostExecute(aVoid);
+
+            if(mostrarMapa)
+                mostrarMapFragment();
         }
     }
 
@@ -361,8 +372,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 latitudGPS = location.getLatitude();
                 longitudGPS = location.getLongitude();
 
-                getpoIs = new GETPOIs(progressDialog);
-                getpoIs.execute();
+                GETPOIs getPOIs = new GETPOIs(progressDialog, false, true);
+                getPOIs.execute();
             }
         }
     }
@@ -534,7 +545,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         longitudGPS = location.getLongitude();
 
         if((latitudGPS != 0.0) && (longitudGPS != 0.0)){
-            new GETPOIs(progressDialog).execute();
+            new GETPOIs(progressDialog, false, true).execute();
 
             // Disconnecting the client invalidates it.
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
@@ -572,6 +583,60 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         //Comprobamos que se disponen de las coordenadas antes de crear el fragmento
         comprobarObtencionCoordenadas();
 
+        if(inputNMaxPOI != -1){
+            //El usuario ha introducido un valor para nMaxPOI
+            if(inputRadioBusqueda != -1){
+                //El usuario ha introducido un valor para el radio de búsqueda
+                if(inputNMaxPOI != maxPOI){
+                    if(inputRadioBusqueda != radio){
+                        //Ambos valores introducidos son distintos de los valores por defecto
+                        maxPOI = inputNMaxPOI;
+                        radio = inputRadioBusqueda;
+                        new GETPOIs(progressDialog, true, true).execute();
+                        return;
+                    }
+                    else{
+                        //Sólo se ha introducido el valor para nMaxPOI y es distinto del valor por defecto
+                        maxPOI = inputNMaxPOI;
+                        new GETPOIs(progressDialog, true, true).execute();
+                        return;
+                    }
+                }
+                else{
+                    //El valor de nMaxPOI introducido es igual al valor por defecto
+                    if(inputRadioBusqueda != radio){
+                        //Pero el valor del radio introducido es distinto del valor por defecto
+                        radio = inputRadioBusqueda;
+                        new GETPOIs(progressDialog, true, true).execute();
+                        return;
+                    }
+                }
+            }
+            else{
+                //Sólo se ha introducido el valor para nMaxPOI
+                if(inputNMaxPOI != maxPOI){
+                    //El valor introducido es distinto del valor por defecto
+                    maxPOI = inputNMaxPOI;
+                    new GETPOIs(progressDialog, true, true).execute();
+                    return;
+                }
+            }
+        }
+        else{
+            //El usuario no ha introducido un valor para nMaxPOI
+            if(inputRadioBusqueda != -1){
+                if(inputRadioBusqueda != radio){
+                    //El valor introducido es distinto del valor por defecto
+                    radio = inputRadioBusqueda;
+                    new GETPOIs(progressDialog, true, true).execute();
+                    return;
+                }
+            }
+        }
+        new GETPOIs(progressDialog, true, false).execute();
+    }
+
+    private void mostrarMapFragment(){
         MapFragment mapFragment = new MapFragment();
 
         Bundle params = new Bundle();
@@ -582,7 +647,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         getFragmentManager()
                 .beginTransaction()
                 .replace(R.id.content_frame, mapFragment)
-                .addToBackStack("MapFragment")
+                .addToBackStack(null)
                 .commit();
     }
 
@@ -596,6 +661,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             /* Si aún después de un segundo intento, se sigue sin haber podido obtener las coordenadas del GPS, utilizar
              * las coordenadas por defecto (latitudPorDefecto, longitudPorDefecto) antes de crear el fragmento
              */
+            double latitudPorDefecto = 41.662826;
+            double longitudPorDefecto = -4.705388;
+
             latitudGPS = latitudPorDefecto;
             longitudGPS = longitudPorDefecto;
 
@@ -607,7 +675,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public boolean isGPSAndInternetEnabled(){
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        Bundle params = new Bundle();
+        String tipoError = "";
 
         boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -615,29 +683,41 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         boolean showDialog = false;
 
-        if (networkInfo != null && networkInfo.isConnected())
-            if (gpsEnabled)
-                mostrarMapa();
-            else{
+        if (networkInfo != null && networkInfo.isConnected()) {
+            if (!gpsEnabled) {
                 showDialog = true;
 
-                params.putString("Error", "GPS");
+                tipoError = "GPS";
             }
+        }
         else {
             showDialog = true;
 
-            params.putString("Error", "INTERNET");
+            tipoError = "INTERNET";
         }
 
         if(showDialog){
-            android.app.DialogFragment errorDialogFragment = new com.example.adrian.monumentos.ErrorDialogFragment();
-            errorDialogFragment.setArguments(params);
-
-            errorDialogFragment.show(getFragmentManager(), "ErrorDialog");
+            showErrorDialog(tipoError);
         }
 
         return !showDialog;
     }
 
     public NavigationView getNavigationView() { return navigationView; }
+
+    public void setInputRadioBusqueda(int inputRadioBusqueda) { this.inputRadioBusqueda = inputRadioBusqueda; }
+
+    public void setInputNMaxPOI(int inputNMaxPOI) { this.inputNMaxPOI = inputNMaxPOI; }
+
+    public void showErrorDialog(String tipoError){
+
+        Bundle params = new Bundle();
+
+        params.putString("Error", tipoError);
+
+        android.app.DialogFragment errorDialogFragment = new com.example.adrian.monumentos.ErrorDialogFragment();
+        errorDialogFragment.setArguments(params);
+
+        errorDialogFragment.show(getFragmentManager(), "ErrorDialog");
+    }
 }
