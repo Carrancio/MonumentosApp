@@ -1,5 +1,6 @@
 package com.example.adrian.monumentos;
 
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -135,6 +136,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         final HomeFragment homeFragment = new HomeFragment();
         getFragmentManager().beginTransaction().add(R.id.content_frame, homeFragment).commit();
 
+
+        final Fragment_Ayuda fragmentayuda = new Fragment_Ayuda();
+
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.navview);
 
@@ -190,10 +194,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                     case R.id.menu_ayuda:
 
-                        //navigationView.getMenu().getItem(3).setChecked(true);
-                        //getSupportFragmentManager().beginTransaction()
-                        //       .replace(R.id.content_frame, fragment)
-                        //      .commit();
+
+
+                       getFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.content_frame, fragmentayuda)
+                                .commit();
 
                         break;
                 }

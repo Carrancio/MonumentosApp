@@ -93,7 +93,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
 
         mapView = (MapView) vista.findViewById(R.id.map);
 
-        //Almacenamos las coordenadas del GPS del usuario
+        //Almacenamos las coordenadas del GPS del usuario obteniendo los datos a través del Bundle desde MainActivity
         Bundle usuario = ((MainActivity) getActivity()).obtenerArgumentos();
         latitudGPS = usuario.getDouble("latitudGPS");
         longitudGPS = usuario.getDouble("longitudGPS");
