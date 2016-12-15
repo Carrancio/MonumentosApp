@@ -37,7 +37,10 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
 
     private GlobalState globalState;
 
-    //Constructor por defecto
+    /**
+     * Constructor por defecto
+     */
+
     public MapFragment(){}
 
     /**
@@ -138,6 +141,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
         iMapController.setZoom(14);
         iMapController.setCenter(point);
 
+//añadimos marcadores
         Marker marker = new Marker(mapView);
         marker.setTitle(nombrePoi);
         marker.setSnippet(descripcion);

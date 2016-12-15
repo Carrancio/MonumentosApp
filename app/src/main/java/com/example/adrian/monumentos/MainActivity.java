@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private ProgressDialog progressDialog;
 
     /**
-     * Crea la vista
+     * Creacion de  la vista
      * @param savedInstanceState Bundle
      */
     @Override
@@ -112,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             hasPermission = hasPermisosUbicacion();
         }
 
+        //Obtencion del idioma del telefono
         idioma = Locale.getDefault().getLanguage();
 
         progressDialog = new ProgressDialog(this);
@@ -153,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
-                //Menú
+                //menu izquierdo
                 switch (item.getItemId()) {
                     case R.id.menu_inicio:
 
@@ -209,6 +210,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             }
         });
 
+        //Toolbar
+
         Toolbar appbar = (Toolbar)findViewById(R.id.appbar);
         setSupportActionBar(appbar);
 
@@ -238,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
 
         /**
-         *
+         *OBtencion del json para obtener los POIs
          * @param params Params
          */
         @Override
@@ -524,11 +527,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 REQUEST_LOCATION);
     }
 
-    /*Método encargado de comprobar si se han obtenido ya las coordenadas GPS y, en caso contrario, obtenerlas*/
+    /**
+     * Método encargado de comprobar si se han obtenido ya las coordenadas GPS y, en caso contrario, obtenerlas
+     */
     public void obtenerCoordenadasGPS(){ mGoogleApiClient.reconnect(); }
 
-    /*Método que obtiene los datos necesarios para MapFragment*/
+    /**
+     * Método que obtiene los datos necesarios para MapFragment
+     */
     public Bundle obtenerArgumentos(){
+
         //Almacenamos los datos necesarios para la utilización de HomeFragment
         Bundle params = new Bundle();
 
@@ -571,6 +579,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Inflamos el menu lateral
+     * @param menu que hemos creado
+     * @return true si el menu esta inflado
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -578,12 +591,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         return true;
     }
 
+    /**
+     * Menu a la izquierda
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.clear();
         return super.onPrepareOptionsMenu(menu);
     }
 
+    /**
+     *  Comprueba si se ha introducido bien los datos del numero de POIs y el radio
+     */
     public void mostrarMapa(){
 
         //Comprobamos que se disponen de las coordenadas antes de crear el fragmento
@@ -642,6 +663,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         new GETPOIs(progressDialog, true, false).execute();
     }
 
+    /**
+     * * Metodo que usamos para mostrar el Mapa en el fragmento si das
+     * a la opcion del menu
+     */
     private void mostrarMapFragment(){
         MapFragment mapFragment = new MapFragment();
 
@@ -657,6 +682,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 .commit();
     }
 
+    /**
+     * Metodo que comprueba si se obtienen las coordenadas GPS
+     * Si no las obtiene, se pondrán las de Valladolid por defecto
+     */
     private void comprobarObtencionCoordenadas(){
         //Primera comprobación de que se han obtenido las coordenadas del GPS
         if((latitudGPS == 0.0) && (longitudGPS == 0.0)){
@@ -678,6 +707,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
+    /**
+     * Metodo que comprueba si el GPS y Internet están activados
+     * @return si alguno no esta activado devuelve un dialogo, si no, no devuelve nada
+     */
     public boolean isGPSAndInternetEnabled(){
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 

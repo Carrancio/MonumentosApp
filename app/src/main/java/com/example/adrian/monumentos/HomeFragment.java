@@ -27,12 +27,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     //Variables introducidas (o no) por el usuario
     EditText nMaxPOIUsuario, radioUsuario;
 
-    /*Almacenamos el tipo de error en el caso de que alguno (o ambos) de los valores
-     * introducidos por el usuario no sean válidos
-     */
+    //Almacenamos el tipo de error en el caso de que alguno (o ambos) de los valores introducidos por el usuario no sean válidos
+
     String tipoError = "";
 
-    //Constructor por defecto
+
     public HomeFragment(){}
 
 

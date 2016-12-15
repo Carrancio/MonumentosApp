@@ -9,12 +9,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+/**
+ * Esta clase sirve para mostrar datos de los POIs
+ * @author Adrian Munoz Rojo
+ * @author Rafael Matamoros Luque
+ * @author David Carrancio Aguado
+ *
+ */
+
 public class POIListFragment extends Fragment{
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
 
+    /**
+     * Constructor vacio
+     */
     public POIListFragment() {}
 
     @Override

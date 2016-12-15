@@ -15,6 +15,13 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+/**
+ * Esta clase sirve para obtener datos de cada POI
+ * @author Adrian Munoz Rojo
+ * @author Rafael Matamoros Luque
+ * @author David Carrancio Aguado
+ *
+ */
 
 
 class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHolder> {
