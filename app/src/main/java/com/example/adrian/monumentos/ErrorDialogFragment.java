@@ -14,7 +14,7 @@ public class ErrorDialogFragment extends DialogFragment{
 
         //Parámetros indicando el tipo de Error a mostrar
         Bundle params = getArguments();
-        String tipoError = params.getString("Error");
+        final String tipoError = params.getString("Error");
 
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -47,7 +47,12 @@ public class ErrorDialogFragment extends DialogFragment{
         }
             builder.setPositiveButton(R.string.aceptar_boton, new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) { } });
+                public void onClick(DialogInterface dialog, int which) {
+                    //Si no está activado el GPS y/o la conexión a Internet, nos quedamos donde estamos en el NavigationView
+                    if((tipoError.equals("GPS")) || (tipoError.equals("INTERNET")))
+                        ((MainActivity) getActivity()).marcarPrevItem();
+                }
+            });
 
         // Create the AlertDialog object and return it
         return builder.create();

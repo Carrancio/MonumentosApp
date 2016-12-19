@@ -28,7 +28,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     EditText nMaxPOIUsuario, radioUsuario;
 
     //Almacenamos el tipo de error en el caso de que alguno (o ambos) de los valores introducidos por el usuario no sean válidos
-
     String tipoError = "";
 
 
@@ -157,14 +156,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             if (mainActivity.isGPSAndInternetEnabled()) {
                 mainActivity.getNavigationView().getMenu().getItem(2).setChecked(true);
 
-                //Sólo se asginan nuevos valores si el usuario ha introducido algo
-                if(nMaxPOI != -1)
-                    mainActivity.setInputNMaxPOI(nMaxPOI);
+                //Los valores introducidos (o no) por el usuario son enviados a "MainActivity"
+                mainActivity.setInputNMaxPOI(nMaxPOI);
+                mainActivity.setInputRadioBusqueda(radio);
 
-                if(radio != -1)
-                    mainActivity.setInputRadioBusqueda(radio);
-
-                mainActivity.mostrarMapa();
+                mainActivity.mostrarInformacion("Mapa");
             }
         }
         else{

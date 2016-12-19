@@ -92,6 +92,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     private ProgressDialog progressDialog;
 
+    private GlobalState globalState;
+
     /**
      * Creacion de  la vista
      * @param savedInstanceState Bundle
@@ -117,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Obteniendo los datos necesarios. Por favor, espere...");
+        progressDialog.setCanceledOnTouchOutside(false);
 
         mResolvingError = savedInstanceState != null
                 && savedInstanceState.getBoolean(STATE_RESOLVING_ERROR, false);
@@ -137,17 +140,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         final HomeFragment homeFragment = new HomeFragment();
         getFragmentManager().beginTransaction().add(R.id.content_frame, homeFragment).commit();
 
-
-        final Fragment_Ayuda fragmentayuda = new Fragment_Ayuda();
-
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.navview);
 
-        //Aparecer en "Inicio" al abrir la aplicación
-        navigationView.getMenu().getItem(0).setChecked(true);
-
         //Hay que asegurarse de que se han obtenido correctamente las coordenadas del GPS
         obtenerCoordenadasGPS();
+
+        globalState = (GlobalState) MainActivity.this.getApplicationContext();
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 
@@ -163,6 +162,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                                 .replace(R.id.content_frame, homeFragment)
                                 .commit();
 
+                        getSupportActionBar().setTitle(getResources().getString(R.string.menu_inicio));
+
                         break;
 
                     case R.id.menu_monumentos:
@@ -170,15 +171,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         //Primero comprobamos que tanto el GPS como la conexión a Internet están activados
                         if(isGPSAndInternetEnabled()) {
 
-                            //Comprobamos que se disponen de las coordenadas antes de crear el fragmento
-                            comprobarObtencionCoordenadas();
+                            mostrarInformacion("Monumentos");
 
-                            POIListFragment poiListFragment = new POIListFragment();
-                            getFragmentManager()
-                                    .beginTransaction()
-                                    .replace(R.id.content_frame, poiListFragment)
-                                    .addToBackStack("POIListFragment")
-                                    .commit();
+                            getSupportActionBar().setTitle(R.string.menu_monumentos);
                         }
 
                         break;
@@ -188,19 +183,24 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         //Primero comprobamos que tanto el GPS como la conexión a Internet están activados
                         if(isGPSAndInternetEnabled()) {
 
-                            mostrarMapa();
+                            mostrarInformacion("Mapa");
+
+                            getSupportActionBar().setTitle(getResources().getString(R.string.menu_mapa));
                         }
 
                         break;
 
                     case R.id.menu_ayuda:
 
+                        AboutFragment fragmentayuda = new AboutFragment();
 
-
-                       getFragmentManager()
+                        getFragmentManager()
                                 .beginTransaction()
                                 .replace(R.id.content_frame, fragmentayuda)
+                                .addToBackStack(null)
                                 .commit();
+
+                        getSupportActionBar().setTitle(getResources().getString(R.string.menu_sobre_app));
 
                         break;
                 }
@@ -215,8 +215,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Toolbar appbar = (Toolbar)findViewById(R.id.appbar);
         setSupportActionBar(appbar);
 
-        getSupportActionBar().setHomeAsUpIndicator(R.mipmap.ic_launcher);
+        getSupportActionBar().setHomeAsUpIndicator(R.mipmap.ic_menu);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(R.string.menu_inicio);
     }
 
     /**
@@ -224,13 +225,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     private class GETPOIs extends AsyncTask<Void, Void, Void> {
 
-        private GlobalState globalState = (GlobalState) MainActivity.this.getApplicationContext();
         private ProgressDialog progressDialog;
-        private boolean mostrarMapa, recalcularURL;
+        private boolean mostrarMapa, mostrarMonumentos, recalcularURL;
 
-        GETPOIs(ProgressDialog progressDialog, boolean mostrarMapa, boolean recalcularURL){
+        GETPOIs(ProgressDialog progressDialog, boolean mostrarMapa, boolean mostrarMonumentos, boolean recalcularURL){
             this.progressDialog = progressDialog;
             this.mostrarMapa = mostrarMapa;
+            this.mostrarMonumentos = mostrarMonumentos;
             this.recalcularURL = recalcularURL;
         }
 
@@ -351,6 +352,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             if(mostrarMapa)
                 mostrarMapFragment();
+            else
+                if(mostrarMonumentos)
+                    mostrarPOIListFragment();
         }
     }
 
@@ -380,9 +384,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             if(location != null) {
                 latitudGPS = location.getLatitude();
                 longitudGPS = location.getLongitude();
-
-                GETPOIs getPOIs = new GETPOIs(progressDialog, false, true);
-                getPOIs.execute();
             }
         }
     }
@@ -396,7 +397,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     REQUEST_LOCATION);
         }
         else {
-            // Crea la localicacion
+            // Crea la localizacion
             LocationRequest locationRequest = LocationRequest.create()
                     .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                     .setInterval(LOCATION_INTERVAL)
@@ -419,7 +420,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             } else {
                 //Informar al usuario de la necesidad de utilizar los permisos de ubicación
                 new AlertDialog.Builder(MainActivity.this)
-
                         .setMessage("La aplicación necesita acceder a su ubicación para poder ejecutarse")
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -559,8 +559,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         longitudGPS = location.getLongitude();
 
         if((latitudGPS != 0.0) && (longitudGPS != 0.0)){
-            new GETPOIs(progressDialog, false, true).execute();
-
             // Disconnecting the client invalidates it.
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
@@ -605,62 +603,144 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     /**
      *  Comprueba si se ha introducido bien los datos del numero de POIs y el radio
      */
-    public void mostrarMapa(){
+    public void mostrarInformacion(String tipoInfo){
+
+        boolean mostrarMapa, mostrarMonumentos;
+
+        if(tipoInfo.equals("Mapa")){
+            mostrarMapa = true;
+            mostrarMonumentos =false;
+        }
+        else{
+            mostrarMonumentos = true;
+            mostrarMapa = false;
+        }
 
         //Comprobamos que se disponen de las coordenadas antes de crear el fragmento
         comprobarObtencionCoordenadas();
 
-        if(inputNMaxPOI != -1){
-            //El usuario ha introducido un valor para nMaxPOI
-            if(inputRadioBusqueda != -1){
-                //El usuario ha introducido un valor para el radio de búsqueda
-                if(inputNMaxPOI != maxPOI){
-                    if(inputRadioBusqueda != radio){
-                        //Ambos valores introducidos son distintos de los valores por defecto
+        int hayNuevaInformacion = usuarioHaIntroducidoInformacion();
+
+        boolean hayInformacionPrevia = !globalState.getListaPOIs().isEmpty();
+
+        switch (hayNuevaInformacion){
+            case 0:
+                //El usuario no ha introducido ningún parámetro
+                if(hayInformacionPrevia)
+                    if((maxPOI == 30) && (radio == 1000)) {
+                        //La información que hay es la información por defecto
+                        //Sólamente hay que mostrar la información que ya teníamos guardada
+                        new GETPOIs(progressDialog, mostrarMapa, mostrarMonumentos, false).execute();
+                    }
+                    else {
+                        //La información que hay es distinta de la información por defecto
+                        maxPOI = 30;
+                        radio = 1000;
+                        //Mostramos la información por defecto
+                        new GETPOIs(progressDialog, mostrarMapa, mostrarMonumentos, true).execute();
+                    }
+                else
+                    //Es necesario obtener la información y, después, mostrarla
+                    new GETPOIs(progressDialog, mostrarMapa, mostrarMonumentos, true).execute();
+                break;
+
+            case 1:
+                //El usuario sólo ha introducido el parámetro "nMaxPOI"
+                if(hayInformacionPrevia)
+                    if(inputNMaxPOI == maxPOI)
+                        //La información introducida por el usuario es la misma que se tenía previamente
+                        new GETPOIs(progressDialog, mostrarMapa, mostrarMonumentos, false).execute();
+                    else {
+                        //La información introducida por el usuario es nueva
                         maxPOI = inputNMaxPOI;
-                        radio = inputRadioBusqueda;
-                        new GETPOIs(progressDialog, true, true).execute();
-                        return;
+                        new GETPOIs(progressDialog, mostrarMapa, mostrarMonumentos, true).execute();
                     }
-                    else{
-                        //Sólo se ha introducido el valor para nMaxPOI y es distinto del valor por defecto
-                        maxPOI = inputNMaxPOI;
-                        new GETPOIs(progressDialog, true, true).execute();
-                        return;
-                    }
-                }
-                else{
-                    //El valor de nMaxPOI introducido es igual al valor por defecto
-                    if(inputRadioBusqueda != radio){
-                        //Pero el valor del radio introducido es distinto del valor por defecto
-                        radio = inputRadioBusqueda;
-                        new GETPOIs(progressDialog, true, true).execute();
-                        return;
-                    }
-                }
-            }
-            else{
-                //Sólo se ha introducido el valor para nMaxPOI
-                if(inputNMaxPOI != maxPOI){
-                    //El valor introducido es distinto del valor por defecto
+                else {
+                    //No se tiene información previa, luego hay que obtener los POIs de 0
                     maxPOI = inputNMaxPOI;
-                    new GETPOIs(progressDialog, true, true).execute();
-                    return;
+                    new GETPOIs(progressDialog, mostrarMapa, mostrarMonumentos, true).execute();
                 }
-            }
-        }
-        else{
-            //El usuario no ha introducido un valor para nMaxPOI
-            if(inputRadioBusqueda != -1){
-                if(inputRadioBusqueda != radio){
-                    //El valor introducido es distinto del valor por defecto
+                break;
+
+            case 2:
+                //El usuario sólo ha introducido el parámetro "Radio"
+                if(hayInformacionPrevia)
+                    if(inputRadioBusqueda == radio)
+                        //La información introducida por el usuario es la misma que se tenía previamente
+                        new GETPOIs(progressDialog, mostrarMapa, mostrarMonumentos, false).execute();
+                    else {
+                        //La información introducida por el usuario es nueva
+                        radio = inputRadioBusqueda;
+                        new GETPOIs(progressDialog, mostrarMapa, mostrarMonumentos, true).execute();
+                    }
+                else {
+                    //No se tiene información previa, luego hay que obtener los POIs de 0
                     radio = inputRadioBusqueda;
-                    new GETPOIs(progressDialog, true, true).execute();
-                    return;
+                    new GETPOIs(progressDialog, mostrarMapa, mostrarMonumentos, true).execute();
                 }
+                break;
+
+            case 3:
+                //El usuario ha introducido tanto el parámetro "nMaxPOI" como "Radio"
+                if(hayInformacionPrevia){
+                    if(inputNMaxPOI == maxPOI){
+                        if(inputRadioBusqueda == radio){
+                            //La información que se tiene es la misma que ha introducido el usuario. Sólo es necesario mostrar, no hay que obtenerla de nuevo
+                            new GETPOIs(progressDialog, mostrarMapa, mostrarMonumentos, false).execute();
+                        }
+                        else {
+                            //La información introducida por el usuario es distinta de la que teníamos para el parámetro "Radio"
+                            radio = inputRadioBusqueda;
+                            new GETPOIs(progressDialog, mostrarMapa, mostrarMonumentos, true).execute();
+                        }
+                    }
+                    else {
+                        if(inputRadioBusqueda == radio){
+                            //La información introducida por el usuario es distinta de la que teníamos para el parámetros "nMaxPOI"
+                            maxPOI = inputNMaxPOI;
+                            new GETPOIs(progressDialog, mostrarMapa, mostrarMonumentos, true).execute();
+                        }
+                        else {
+                            //La información introducida por el usuario es distinta de la que teníamos para ambos parámetros
+                            maxPOI = inputNMaxPOI;
+                            radio = inputRadioBusqueda;
+                            new GETPOIs(progressDialog, mostrarMapa, mostrarMonumentos, true).execute();
+                        }
+                    }
+                }
+                else {
+                    //No se tiene información previa, luego hay que obtener los POIs de 0
+                    maxPOI = inputNMaxPOI;
+                    radio = inputRadioBusqueda;
+                    new GETPOIs(progressDialog, mostrarMapa, mostrarMonumentos, true).execute();
+                }
+                break;
+        }
+    }
+
+    private int usuarioHaIntroducidoInformacion(){
+        if (inputNMaxPOI != -1) {
+            //El usuario ha introducido un valor para "nMaxPOI"
+            if (inputRadioBusqueda != -1) {
+                //El usuario ha introducido un valor para "Radio" y "nMaxPOI"
+                return 3;
+            }
+            else {
+                //Sólo se ha introducido un valor para "nMaxPOI"
+                return 1;
             }
         }
-        new GETPOIs(progressDialog, true, false).execute();
+        else {
+            //El usuario NO ha introducido un valor para "nMaxPOI"
+            if (inputRadioBusqueda != -1) {
+                //Sólo se ha introducido un valor para "Radio"
+                return 2;
+            }
+            else {
+                //El usuario no ha introducido nada
+                return 0;
+            }
+        }
     }
 
     /**
@@ -678,6 +758,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         getFragmentManager()
                 .beginTransaction()
                 .replace(R.id.content_frame, mapFragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private void mostrarPOIListFragment(){
+        POIListFragment poiListFragment = new POIListFragment();
+
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content_frame, poiListFragment)
                 .addToBackStack(null)
                 .commit();
     }
@@ -701,9 +791,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             latitudGPS = latitudPorDefecto;
             longitudGPS = longitudPorDefecto;
-
-            //Volvemos a conectar para obtener los monumentos asociados a estas coordenadas
-            obtenerCoordenadasGPS();
         }
     }
 
@@ -758,5 +845,33 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         errorDialogFragment.setArguments(params);
 
         errorDialogFragment.show(getFragmentManager(), "ErrorDialog");
+    }
+
+    public void marcarPrevItem(){
+
+        String navigationTitle = getSupportActionBar().getTitle().toString();
+
+        if(navigationTitle.equals(getResources().getString(R.string.menu_inicio)))
+            navigationView.getMenu().getItem(0).setChecked(true);
+        else
+            if(navigationTitle.equals(getResources().getString(R.string.menu_monumentos)))
+                navigationView.getMenu().getItem(1).setChecked(true);
+            else
+                if(navigationTitle.equals(getResources().getString(R.string.menu_mapa)))
+                    navigationView.getMenu().getItem(2).setChecked(true);
+                else
+                    navigationView.getMenu().getItem(3).setChecked(true);
+    }
+
+    /**
+     * Take care of popping the fragment back stack or finishing the activity
+     * as appropriate.
+     */
+    @Override
+    public void onBackPressed() {
+        if(drawerLayout.isDrawerOpen(navigationView))
+            drawerLayout.closeDrawers();
+        else
+            super.onBackPressed();
     }
 }

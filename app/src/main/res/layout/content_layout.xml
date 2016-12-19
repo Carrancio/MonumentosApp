@@ -5,9 +5,7 @@
     android:orientation="vertical"
     android:clickable="true"
     tools:context=".MainActivity"
-    tools:showIn="@layout/activity_main"
-
-    >
+    tools:showIn="@layout/activity_main">
 
     <!-- Toolbar -->
     <android.support.v7.widget.Toolbar
@@ -17,7 +15,6 @@
         android:layout_width="match_parent"
         android:minHeight="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
@@ -26,7 +23,6 @@
         android:id="@+id/content_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
         android:background="@color/wallet_highlighted_text_holo_light" />
 
 </LinearLayout>

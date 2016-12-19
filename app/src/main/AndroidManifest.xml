@@ -16,8 +16,8 @@
     <application
         android:allowBackup="true"
         android:fullBackupContent="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:icon="@mipmap/ic_app"
+        android:label="Cluster05"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:name=".GlobalState" >

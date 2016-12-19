@@ -1,6 +1,7 @@
 package com.example.adrian.monumentos;
 
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -25,14 +26,19 @@ class InfoBubble extends MarkerInfoWindow {
 
     private POI poi;
 
+    private final static String POI_NOMBRE = "POI_NOMBRE";
     private final static String POI_URL = "POI_URL";
 
-    InfoBubble(MapView mapView, final MapFragment mapFragment){
+    private boolean mostrarIconoUbicacion;
+
+    InfoBubble(MapView mapView, final MapFragment mapFragment, boolean mostrarIconoUbicacion){
         super(R.layout.info_bubble, mapView);
 
-        Button button = (Button) mView.findViewById(R.id.boton_mas_informacion);
+        this.mostrarIconoUbicacion = mostrarIconoUbicacion;
 
-        button.setOnClickListener(new View.OnClickListener() {
+        Button boton_mas_info = (Button) mView.findViewById(R.id.boton_mas_informacion);
+
+        boton_mas_info.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 if (poi.getEnlace() != null) {
 
@@ -49,6 +55,30 @@ class InfoBubble extends MarkerInfoWindow {
                 }
             }
         });
+
+        if(mostrarIconoUbicacion) {
+            Button boton_ruta = (Button) mView.findViewById(R.id.boton_ruta);
+
+            boton_ruta.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    view.setBackground(ContextCompat.getDrawable(mView.getContext(), R.drawable.ic_ubication_pressed));
+
+                    MapFragment mapFragmentPOI = new MapFragment();
+                    Bundle params = new Bundle();
+                    params.putString("Origen", "MapFragment");
+                    params.putString(POI_NOMBRE, poi.getNombre());
+                    mapFragmentPOI.setArguments(params);
+
+                    mapFragment.getFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.content_frame, mapFragmentPOI)
+                            .addToBackStack(null)
+                            .commit();
+                }
+            });
+        }
     }
 
     @Override
@@ -58,16 +88,19 @@ class InfoBubble extends MarkerInfoWindow {
 
         mView.findViewById(R.id.boton_mas_informacion).setVisibility(View.VISIBLE);
 
+        if(mostrarIconoUbicacion)
+            mView.findViewById(R.id.boton_ruta).setVisibility(View.VISIBLE);
+
         Marker marker = (Marker) item;
         poi = (POI) marker.getRelatedObject();
 
         //Dibujar el logo de la App antes de descargar la imagen de WikiPedia
-        ((ImageView) mView.findViewById(R.id.bubble_image)).setImageResource(R.drawable.logo_app);
+        ((ImageView) mView.findViewById(R.id.bubble_image)).setImageResource(R.drawable.ic_app);
 
         //Descarga de la imagen a partir de la URL
         if (poi.getUrl_imagen() != null) {
             Picasso.with(mView.getContext()).load(poi.getUrl_imagen())
-                    .placeholder(R.drawable.logo_app)
+                    .placeholder(R.drawable.ic_app)
                     .fit()
                     .centerCrop()
                     .into(((ImageView) mView.findViewById(R.id.bubble_image)));

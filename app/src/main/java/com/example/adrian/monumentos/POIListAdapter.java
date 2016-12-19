@@ -138,12 +138,12 @@ class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHolder> {
         }
 
         //Dibujar el logo de la App antes de descargar la imagen de WikiPedia
-        holder.imagenPoi.setImageResource(R.drawable.logo_app);
+        holder.imagenPoi.setImageResource(R.drawable.ic_app);
 
         //Descarga de la imagen a partir de la URL
         if (urlImagenPoi != null && !"".equals(urlImagenPoi)) {
             Picasso.with(context).load(urlImagenPoi)
-                    .placeholder(R.drawable.logo_app)
+                    .placeholder(R.drawable.ic_app)
                     .fit()
                     .centerCrop()
                     .into(holder.imagenPoi);
