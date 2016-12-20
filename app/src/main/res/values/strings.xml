@@ -3,38 +3,35 @@
     <string name="app_name">TripApp</string>
     <string name="app_version">Version: 1.0</string>
     <string name="menu_inicio">Home</string>
-    <string name="menu_monumentos">POI</string>
-    <string name="menu_mapa">Mapa</string>
-    <string name="menu_sobre_app">Sobre TripApp</string>
-    <string name="ir_al_mapa_boton">Ir al mapa</string>
-    <string name="leer_mas_boton">Más en WikiPedia</string>
-    <string name="aceptar_boton">Aceptar</string>
-    <string name="imagen_poi">Imagen POI</string>
-    <string name="buscar_monumentos_boton">Lo</string>
+    <string name="menu_monumentos">POIs</string>
+    <string name="menu_mapa">Map</string>
+    <string name="menu_sobre_app">About TripApp</string>
+    <string name="ir_al_mapa_boton">Go to the map</string>
+    <string name="leer_mas_boton">Read in Wikipedia</string>
+    <string name="aceptar_boton">Accept</string>
+    <string name="imagen_poi">POI image</string>
+    <string name="buscar_monumentos_boton">Find POIs near my</string>
     <string name="logo">Logo</string>
-    <string name="titulo">Título</string>
-    <string name="descripcion">Descripción</string>
-    <string name="subdescripcion">Sub-descripción</string>
-    <string name="opcionesBusqueda">Opciones de búsqueda (por defecto)</string>
-    <string name="maxPOIDefecto">Máx. POI (30)</string>
-    <string name="rangoBusquedaDefecto">Radio (1 km)</string>
+    <string name="titulo">Tittle</string>
+    <string name="descripcion">Description</string>
+    <string name="subdescripcion">Sub-description</string>
+    <string name="opcionesBusqueda">Search options (default)</string>
+    <string name="maxPOIDefecto">Max. POIs(30)</string>
+    <string name="rangoBusquedaDefecto">Radius (1 km)</string>
 
-    <string name="error_activar_GPS_1">Por favor, active el GPS.</string>
-    <string name="error_activar_GPS_2">Algunas funcionalidades no pueden utilizarse sin GPS</string>
-    <string name="error_activar_Internet_1">Por favor, active la conexión a Internet.</string>
-    <string name="error_activar_Internet_2">Esta aplicación no puede funcionar sin una conexión a Internet</string>
-    <string name="error_maxPOI">El valor introducido para \"Máx. POI\" no es válido.\nPor favor, introduzca un número entre 1 y 500</string>
-    <string name="error_radio">El valor introducido para \"Radio\" no es válido.\nPor favor, introduzca un número entre 0.1 y 10</string>
-    <string name="error_maxPOIandRadio">Los valores introducidos para \"Máx. POI\" y \"Radio\" no son válidos.\n\nPor favor, introduzca un número entre 1 y 500 para \"Máx. POI\", y entre 0.1 y 10 para \"Radio\"</string>
+    <string name="error_activar_GPS_1">Please, activate the GPS.</string>
+    <string name="error_activar_GPS_2">Some features can\'t be used without GPS</string>
+    <string name="error_activar_Internet_1">Please, activate the internet connection</string>
+    <string name="error_activar_Internet_2">This app can\'t work without an internet connection</string>
+    <string name="error_maxPOI">The value entered for \"Max. POIs\" is invalid.\nPlease, enter a number between 1 and 500</string>
+    <string name="error_radio">The value entered for \"Radius\" is invalid.\nPlease, enter a number between 0.1 and 10</string>
+    <string name="error_maxPOIandRadio">The values entered for \"Max. POIs\" and \"Radius\" are invalid.\n\nPlease, enter a number between 1 and 500 for \"Max. POIs\", and between 0.1 and 10 for \"Radius\"</string>
 
-    <string name="about_app_1">TripApp es una aplicación de viaje, que hará tus visitas turísticas mucho más gratificantes.\n\nGracias a la utilización de OpenStreetMap,
-        TripApp te ofrece múltiples opciones para ver qué puntos de interés (POI, de sus
-     siglas en inglés) hay cercanos a tu posición.\n\nPuedes elegir verlos en formato de lista (Menú > Monumentos) o dibujados
-     sobre un mapa junto a tu ubicación (Menú > Mapa); así como poder acceder a la página de la WikiPedia correspondiente o ver una ruta punto por punto
-    desde tu ubicación al POI en concreto.</string>
-    <string name="about_app_2">Los desarrolladores de esta aplicacion somos el \"Cluster05\":\n
+    <string name="about_app_1">TripApp is a travel app that will make your sightseeing much more rewarding.\n\nThanks to the use of OpenStreetMap,
+        TripApp offers multiple options to see what points of interest near your position there.\n\nYou can choose to view them in list format (Menu > POIs) or drawn on a map with your location (Menu > Map); as well as to access to the corresponding page Wikipedia or see a route point by point from your location to the specific POI.</string>
+    <string name="about_app_2">The developers of this app are the \"Cluster05\":\n
         \n· Rafael Matamoros Luque
         \n· Adrián Muñoz Rojo
         \n· David Carrancio Aguado</string>
-    <string name="about_app_3">Esta aplicacion ha sido desarrollada para la asignatura \"Sistemas Móviles\" del grado en Ingenieria Informática de la Universidad de Valladolid.</string>
+    <string name="about_app_3">This app has been developed for the subject \"Mobile Systems\" of the degree in Computer Engineering of the University of Valladolid.</string>
 </resources>

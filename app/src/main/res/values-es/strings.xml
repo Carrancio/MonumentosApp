@@ -10,7 +10,7 @@
     <string name="leer_mas_boton">Leer en WikiPedia</string>
     <string name="aceptar_boton">Aceptar</string>
     <string name="imagen_poi">Imagen POI</string>
-    <string name="buscar_monumentos_boton">Buscar cerca de mi</string>
+    <string name="buscar_monumentos_boton">Buscar POIs cerca de mi</string>
     <string name="logo">Logo</string>
     <string name="titulo">Título</string>
     <string name="descripcion">Descripción</string>
@@ -24,12 +24,12 @@
     <string name="error_activar_Internet_1">Por favor, active la conexión a Internet.</string>
     <string name="error_activar_Internet_2">Esta aplicación no puede funcionar sin una conexión a Internet</string>
     <string name="error_maxPOI">El valor introducido para \"Máx. POI\" no es válido.\nPor favor, introduzca un número entre 1 y 500</string>
-    <string name="error_radio">El valor introducido para \"Radio\" no es válido.\nPor favor, introduzca un número entre 0.1 y 10</string>
+    <string name="error_radio">El valor introducido para \"Radio\" no es válido.\nPor favor, introduzca un número entre 0,1 y 10</string>
     <string name="error_maxPOIandRadio">Los valores introducidos para \"Máx. POI\" y \"Radio\" no son válidos.\n\nPor favor, introduzca un número entre 1 y 500 para \"Máx. POI\", y entre 0.1 y 10 para \"Radio\"</string>
 
     <string name="about_app_1">TripApp es una aplicación de viaje, que hará tus visitas turísticas mucho más gratificantes.\n\nGracias a la utilización de OpenStreetMap,
-        TripApp te ofrece múltiples opciones para ver qué puntos de interés (POI, de sus
-     siglas en inglés) hay cercanos a tu posición.\n\nPuedes elegir verlos en formato de lista (Menú > Monumentos) o dibujados
+        TripApp te ofrece múltiples opciones para ver qué puntos de interés (POIs, de sus
+     siglas en inglés) hay cercanos a tu posición.\n\nPuedes elegir verlos en formato de lista (Menú > Puntos de interés) o dibujados
      sobre un mapa junto a tu ubicación (Menú > Mapa); así como poder acceder a la página de la WikiPedia correspondiente o ver una ruta punto por punto
     desde tu ubicación al POI en concreto.</string>
     <string name="about_app_2">Los desarrolladores de esta aplicacion somos el \"Cluster05\":\n
