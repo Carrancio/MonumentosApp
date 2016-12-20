@@ -34,4 +34,6 @@
         \n· Adrián Muñoz Rojo
         \n· David Carrancio Aguado</string>
     <string name="about_app_3">This app has been developed for the subject \"Mobile Systems\" of the degree in Computer Engineering of the University of Valladolid.</string>
+    <string name="ubication">THIS IS YOUR LOCATION</string>
+    <string name="datos">Obtaining the necessary data. Please wait</string>
 </resources>

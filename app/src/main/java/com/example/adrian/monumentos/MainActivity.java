@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         idioma = Locale.getDefault().getLanguage();
 
         progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Obteniendo los datos necesarios. Por favor, espere...");
+        progressDialog.setMessage(getResources().getString(R.string.datos));
         progressDialog.setCanceledOnTouchOutside(false);
 
         mResolvingError = savedInstanceState != null
@@ -609,7 +609,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     /**
      * Menu a la izquierda
      * @param menu
-     * @return
+     * @return menu a la izquierda
      */
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {

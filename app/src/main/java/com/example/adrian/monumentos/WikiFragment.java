@@ -1,5 +1,6 @@
 package com.example.adrian.monumentos;
 
+import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ public class WikiFragment extends Fragment{
         super.onCreate(savedInstanceState);
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

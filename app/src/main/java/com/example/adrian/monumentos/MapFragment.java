@@ -187,7 +187,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
         GeoPoint miUbicacion = new GeoPoint(latitudGPS ,longitudGPS);
 
         Marker user = new Marker(mapView);
-        user.setTitle("ESTA ES TU UBICACIÓN");
+        user.setTitle(getResources().getString(R.string.ubication));
         user.setPosition(miUbicacion);
         user.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         user.setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.marker_user_icon));
@@ -199,7 +199,8 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
         user.setOnMarkerClickListener(this);
 
         ProgressDialog progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage("Obteniendo los datos necesarios. Por favor, espere...");
+        progressDialog.setMessage(getResources().getString(R.string.datos));
+
         progressDialog.setCanceledOnTouchOutside(false);
 
         marker.showInfoWindow();
@@ -242,7 +243,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
         GeoPoint miUbicacion = new GeoPoint(latitudGPS ,longitudGPS);
 
         Marker user = new Marker(mapView);
-        user.setTitle("ESTA ES TU UBICACIÓN");
+        user.setTitle(getResources().getString(R.string.ubication));
         user.setPosition(miUbicacion);
         user.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         user.setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.marker_user_icon));

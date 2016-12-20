@@ -28,7 +28,7 @@ public class AboutFragment extends Fragment {
      * @param inflater
      * @param container
      * @param savedInstanceState
-     * @return
+     * @return fragmento
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

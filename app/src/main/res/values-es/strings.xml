@@ -37,4 +37,6 @@
         \n· Adrián Muñoz Rojo
         \n· David Carrancio Aguado</string>
     <string name="about_app_3">Esta aplicacion ha sido desarrollada para la asignatura \"Sistemas Móviles\" del grado en Ingenieria Informática de la Universidad de Valladolid.</string>
+    <string name="ubication">ESTA ES TU UBICACIÓN</string>
+    <string name="datos">Obteniendo los datos necesarios. Espere por favor</string>
 </resources>
