@@ -29,7 +29,6 @@ class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHolder> {
     private final ArrayList<POI> poiList;
     private final Context context;
     private final POIListFragment poiListFragment;
-    private final GlobalState globalState;
 
     final static String POI_URL = "POI_URL";
     private final static String POI_NOMBRE = "POI_NOMBRE";
@@ -56,7 +55,7 @@ class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHolder> {
     POIListAdapter(Context context, POIListFragment poiListFragment){
         this.context = context;
         this.poiListFragment = poiListFragment;
-        this.globalState = (GlobalState) context.getApplicationContext();
+        GlobalState globalState = (GlobalState) context.getApplicationContext();
         this.poiList = globalState.getListaPOIs();
     }
 

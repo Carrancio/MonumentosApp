@@ -28,7 +28,7 @@ class InfoBubble extends MarkerInfoWindow {
     private final static String POI_NOMBRE = "POI_NOMBRE";
     private final static String POI_URL = "POI_URL";
 
-    private boolean mostrarIconoUbicacion;
+    private final boolean mostrarIconoUbicacion;
 
     InfoBubble(MapView mapView, final MapFragment mapFragment, boolean mostrarIconoUbicacion){
         super(R.layout.info_bubble, mapView);

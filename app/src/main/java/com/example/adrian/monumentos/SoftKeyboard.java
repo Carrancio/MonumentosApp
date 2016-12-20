@@ -24,12 +24,12 @@ class SoftKeyboard implements View.OnFocusChangeListener
 {
     private static final int CLEAR_FOCUS = 0;
 
-    private ViewGroup layout;
+    private final ViewGroup layout;
     private int layoutBottom;
-    private InputMethodManager im;
-    private int[] coords;
+    private final InputMethodManager im;
+    private final int[] coords;
     private boolean isKeyboardShow;
-    private SoftKeyboardChangesThread softKeyboardThread;
+    private final SoftKeyboardChangesThread softKeyboardThread;
     private List<EditText> editTextList;
 
     private View tempView; // reference to a focused EditText
@@ -164,7 +164,7 @@ class SoftKeyboard implements View.OnFocusChangeListener
 
     private class SoftKeyboardChangesThread extends Thread
     {
-        private AtomicBoolean started;
+        private final AtomicBoolean started;
         private SoftKeyboardChanged mCallback;
 
         SoftKeyboardChangesThread()

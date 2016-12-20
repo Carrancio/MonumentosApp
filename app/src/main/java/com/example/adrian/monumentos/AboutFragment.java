@@ -35,10 +35,4 @@ public class AboutFragment extends Fragment {
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.about_fragment,container,false);
     }
-
-
-
-
-
-
 }

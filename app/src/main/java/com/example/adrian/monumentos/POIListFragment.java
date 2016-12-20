@@ -19,10 +19,6 @@ import android.view.ViewGroup;
 
 public class POIListFragment extends Fragment{
 
-    private RecyclerView recyclerView;
-    private RecyclerView.Adapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
-
     /**
      * Constructor vacio
      */
@@ -39,14 +35,14 @@ public class POIListFragment extends Fragment{
         View vista = inflater.inflate(R.layout.poi_list_fragment, container, false);
 
 
-        recyclerView = (RecyclerView) vista.findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = (RecyclerView) vista.findViewById(R.id.recycler_view);
 
         recyclerView.setHasFixedSize(true);
 
-        layoutManager = new LinearLayoutManager(getActivity());
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-        adapter = new POIListAdapter(getActivity(), this);
+        RecyclerView.Adapter adapter = new POIListAdapter(getActivity(), this);
         recyclerView.setAdapter(adapter);
 
         return vista;

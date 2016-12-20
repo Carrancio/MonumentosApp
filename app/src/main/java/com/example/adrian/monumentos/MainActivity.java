@@ -56,11 +56,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     private boolean permissionRequestDone = false;
 
-    DrawerLayout drawerLayout;
-    NavigationView navigationView;
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
 
     private String idioma;
-    private String TAG = MainActivity.class.getSimpleName();
+    private final String TAG = MainActivity.class.getSimpleName();
 
     private double latitudGPS;
     private double longitudGPS;
@@ -240,8 +240,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     private class GETPOIs extends AsyncTask<Void, Void, Void> {
 
-        private ProgressDialog progressDialog;
-        private boolean mostrarMapa, mostrarMonumentos, recalcularURL;
+        private final ProgressDialog progressDialog;
+        private final boolean mostrarMapa;
+        private final boolean mostrarMonumentos;
+        private final boolean recalcularURL;
 
         GETPOIs(ProgressDialog progressDialog, boolean mostrarMapa, boolean mostrarMonumentos, boolean recalcularURL){
             this.progressDialog = progressDialog;
@@ -502,7 +504,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     /* Called from ErrorDialogFragment when the dialog is dismissed. */
-    public void onDialogDismissed() {
+    private void onDialogDismissed() {
         mResolvingError = false;
     }
 
@@ -545,7 +547,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     /**
      * Método encargado de comprobar si se han obtenido ya las coordenadas GPS y, en caso contrario, obtenerlas
      */
-    public void obtenerCoordenadasGPS(){ mGoogleApiClient.reconnect(); }
+    private void obtenerCoordenadasGPS(){ mGoogleApiClient.reconnect(); }
 
     /**
      * Método que obtiene los datos necesarios para MapFragment

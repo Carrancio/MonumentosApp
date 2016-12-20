@@ -21,14 +21,15 @@ import android.widget.LinearLayout;
  */
 public class HomeFragment extends Fragment implements View.OnClickListener {
 
-    LinearLayout home_container;
-    SoftKeyboard softKeyboard;
+    private LinearLayout home_container;
+    private SoftKeyboard softKeyboard;
 
     //Variables introducidas (o no) por el usuario
-    EditText nMaxPOIUsuario, radioUsuario;
+    private EditText nMaxPOIUsuario;
+    private EditText radioUsuario;
 
     //Almacenamos el tipo de error en el caso de que alguno (o ambos) de los valores introducidos por el usuario no sean válidos
-    String tipoError = "";
+    private String tipoError = "";
 
 
     public HomeFragment(){}

@@ -54,8 +54,8 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
 
     private IGeoPoint centroPantalla;
 
-    private ArrayList<Marker> marcadores = new ArrayList<>();
-    private ArrayList<Marker> nodeMarkers = new ArrayList<>();
+    private final ArrayList<Marker> marcadores = new ArrayList<>();
+    private final ArrayList<Marker> nodeMarkers = new ArrayList<>();
 
     private int indiceRestaurar = -1;
 
@@ -453,10 +453,12 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
 
     private class crearRuta extends AsyncTask<Void, Void, Void>{
 
-        private GeoPoint inicio, fin;
-        private List<Overlay> overlays;
-        private ProgressDialog progressDialog;
-        private Marker user, poi;
+        private final GeoPoint inicio;
+        private final GeoPoint fin;
+        private final List<Overlay> overlays;
+        private final ProgressDialog progressDialog;
+        private final Marker user;
+        private final Marker poi;
 
         crearRuta(ProgressDialog progressDialog, GeoPoint inicio, GeoPoint fin, List<Overlay> overlays, Marker user, Marker poi){
             this.progressDialog = progressDialog;

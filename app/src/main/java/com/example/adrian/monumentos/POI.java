@@ -95,7 +95,7 @@ public class POI implements Parcelable{
 
 
     //Seccion Parcelable
-    public POI(Parcel in){
+    private POI(Parcel in){
         String[] datos = new String[6];
 
         in.readStringArray(datos);
