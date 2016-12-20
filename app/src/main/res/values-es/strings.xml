@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TripApp</string>
-    <string name="app_version">Version: 1.0</string>
-    <string name="menu_inicio">Home</string>
-    <string name="menu_monumentos">POI</string>
+    <string name="app_version">Versión: 1.0</string>
+    <string name="menu_inicio">Inicio</string>
+    <string name="menu_monumentos">Puntos de interés</string>
     <string name="menu_mapa">Mapa</string>
     <string name="menu_sobre_app">Sobre TripApp</string>
     <string name="ir_al_mapa_boton">Ir al mapa</string>
-    <string name="leer_mas_boton">Más en WikiPedia</string>
+    <string name="leer_mas_boton">Leer en WikiPedia</string>
     <string name="aceptar_boton">Aceptar</string>
     <string name="imagen_poi">Imagen POI</string>
-    <string name="buscar_monumentos_boton">lokking</string>
+    <string name="buscar_monumentos_boton">Buscar cerca de mi</string>
     <string name="logo">Logo</string>
     <string name="titulo">Título</string>
     <string name="descripcion">Descripción</string>
