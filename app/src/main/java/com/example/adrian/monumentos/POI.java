@@ -1,5 +1,8 @@
 package com.example.adrian.monumentos;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Esta clase sirve para obtener datos de cada POI
  * @author Adrian Munoz Rojo
@@ -8,7 +11,7 @@ package com.example.adrian.monumentos;
  *
  */
 
-public class POI {
+public class POI implements Parcelable{
 
     //Componentes de un POI (Point of Interest)
     private String nombre;
@@ -89,4 +92,39 @@ public class POI {
     public String getEnlace() { return enlace; }
 
     public void setEnlace(String enlace) { this.enlace = enlace; }
+
+
+    //Seccion Parcelable
+    public POI(Parcel in){
+        String[] datos = new String[6];
+
+        in.readStringArray(datos);
+        this.nombre = datos[0];
+        this.descripcion = datos[1];
+        this.latitud = Double.parseDouble(datos[2]);
+        this.longitud = Double.parseDouble(datos[3]);
+        this.url_imagen = datos[4];
+        this.enlace = datos[5];
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeStringArray(new String[] {this.nombre,
+        this.descripcion, String.valueOf(this.latitud), String.valueOf(this.longitud), this.url_imagen, this.enlace});
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public POI createFromParcel(Parcel in){
+            return new POI(in);
+        }
+
+        public POI[] newArray(int size){
+            return new POI[size];
+        }
+    };
 }

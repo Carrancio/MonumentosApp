@@ -52,7 +52,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         softKeyboard = new SoftKeyboard(home_container, im);
 
-        softKeyboard.setSoftKeyboardCallback(new SoftKeyboard.SoftKeyboardChanged() {
+        SoftKeyboard.SoftKeyboardChanged softKeyboardChanged = new SoftKeyboard.SoftKeyboardChanged() {
             @Override
             public void onSoftKeyboardHide() {
                 getActivity().runOnUiThread(new Runnable() {
@@ -67,9 +67,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             public void onSoftKeyboardShow() {
                 //No hacer nada. El comportamiento por defecto es el adecuado
             }
-        });
+        };
 
-        nMaxPOIUsuario.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        softKeyboard.setSoftKeyboardCallback(softKeyboardChanged);
+
+        View.OnFocusChangeListener onFocusChangeListener = new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus){
@@ -77,17 +79,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     softKeyboard.openSoftKeyboard();
                 }
             }
-        });
+        };
 
-        radioUsuario.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus){
-                    //Mostrar el teclado cuando se obtenga el focus
-                    softKeyboard.openSoftKeyboard();
-                }
-            }
-        });
+        nMaxPOIUsuario.setOnFocusChangeListener(onFocusChangeListener);
+
+        radioUsuario.setOnFocusChangeListener(onFocusChangeListener);
 
         home_container.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override

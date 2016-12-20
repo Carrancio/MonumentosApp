@@ -77,7 +77,8 @@
                         android:layout_height="wrap_content"
                         android:hint="@string/maxPOIDefecto"
                         android:id="@+id/maxPOI"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:imeOptions="flagNoFullscreen"/>
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -92,7 +93,8 @@
                         android:layout_height="wrap_content"
                         android:hint="@string/rangoBusquedaDefecto"
                         android:id="@+id/radio"
-                        android:inputType="number|numberDecimal" />
+                        android:inputType="number|numberDecimal"
+                        android:imeOptions="flagNoFullscreen"/>
                 </android.support.design.widget.TextInputLayout>
             </LinearLayout>
 

@@ -93,7 +93,7 @@ class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHolder> {
 
                     FragmentTransaction transaction = poiListFragment.getFragmentManager().beginTransaction();
                     transaction.replace(R.id.content_frame, wikiFragment);
-                    transaction.addToBackStack(null);
+                    transaction.addToBackStack("WikiFragment");
                     transaction.commit();
                 }
             });
@@ -115,7 +115,7 @@ class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHolder> {
 
                     FragmentTransaction transaction = poiListFragment.getFragmentManager().beginTransaction();
                     transaction.replace(R.id.content_frame, mapFragment);
-                    transaction.addToBackStack(null);
+                    transaction.addToBackStack("MapFragment");
                     transaction.commit();
                 }
             });

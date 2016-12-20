@@ -3,6 +3,7 @@ package com.example.adrian.monumentos;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,7 +12,9 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
+import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.routing.OSRMRoadManager;
 import org.osmdroid.bonuspack.routing.Road;
@@ -47,6 +50,17 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
 
     private GlobalState globalState;
 
+    private int orientacionPantalla;
+
+    private IGeoPoint centroPantalla;
+
+    private ArrayList<Marker> marcadores = new ArrayList<>();
+    private ArrayList<Marker> nodeMarkers = new ArrayList<>();
+
+    private int indiceRestaurar = -1;
+
+    private Bundle fragmentToRestore = new Bundle();
+
     //Constructor por defecto
     public MapFragment(){}
 
@@ -73,6 +87,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         params = getArguments();
         globalState = (GlobalState) getActivity().getApplication();
     }
@@ -103,6 +118,9 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
 
         mapView = (MapView) vista.findViewById(R.id.map);
 
+        //Obtenemos la orientación actual de la pantalla
+        orientacionPantalla = getActivity().getResources().getConfiguration().orientation;
+
         //Almacenamos las coordenadas del GPS del usuario
         Bundle usuario = ((MainActivity) getActivity()).obtenerArgumentos();
         latitudGPS = usuario.getDouble("latitudGPS");
@@ -113,6 +131,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
         mapView.setMultiTouchControls(true);
         mapView.setTilesScaledToDpi(true);
 
+
         if((params.getString("Origen").equals("POIListAdapter")) || (params.getString("Origen").equals("MapFragment")))
             mostrarMapaPOI();
         else
@@ -122,9 +141,9 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
     }
 
     /*
-    * Método que se encarga de mostrar un mapa centrado en la ubicación del POI.
-    * Además muestra la ubicación del usuario
-    * */
+     * Método que se encarga de mostrar un mapa centrado en la ubicación del POI.
+     * Además muestra la ubicación del usuario
+     * */
     private void mostrarMapaPOI(){
 
         String nombrePoi = params.getString(POI_NOMBRE);
@@ -146,7 +165,12 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
 
         IMapController iMapController = mapView.getController();
         iMapController.setZoom(14);
-        iMapController.setCenter(point);
+
+        centroPantalla = point;
+        if(orientacionPantalla == 2)
+            centroPantalla = new GeoPoint(centroPantalla.getLatitude() + 0.0015, centroPantalla.getLongitude());
+
+        iMapController.setCenter(centroPantalla);
 
         Marker marker = new Marker(mapView);
         marker.setTitle(nombrePoi);
@@ -171,6 +195,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
         MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(this);
         mapView.getOverlays().add(0, mapEventsOverlay);
 
+        marker.setOnMarkerClickListener(this);
         user.setOnMarkerClickListener(this);
 
         ProgressDialog progressDialog = new ProgressDialog(getActivity());
@@ -178,6 +203,9 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
         progressDialog.setCanceledOnTouchOutside(false);
 
         marker.showInfoWindow();
+
+        marcadores.add(marker);
+        marcadores.add(user);
 
         new crearRuta(progressDialog, miUbicacion, point, mapView.getOverlays(), user, marker).execute();
     }
@@ -207,6 +235,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
             marker.setInfoWindow(infoBubble);
 
             mapView.getOverlays().add(marker);
+            marcadores.add(marker);
         }
 
         //Ubicación del usuario
@@ -222,16 +251,68 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
 
         IMapController iMapController = mapView.getController();
         iMapController.setZoom(14);
-        iMapController.setCenter(miUbicacion);
 
-        user.showInfoWindow();
+        if(indiceRestaurar == -1) {
+            centroPantalla = miUbicacion;
+            if (orientacionPantalla == 2)
+                centroPantalla = new GeoPoint(centroPantalla.getLatitude() + 0.0015, centroPantalla.getLongitude());
 
-        mapView.invalidate();
+            iMapController.setCenter(centroPantalla);
+
+            user.showInfoWindow();
+
+            mapView.invalidate();
+        }
+        else {
+            //El fragmento está siendo restaurado de un estado anterior
+            Marker marcador = marcadores.get(indiceRestaurar);
+
+            POI restoredPOI = null;
+
+            for(POI poiToRestore: listaPOIs){
+                if(poiToRestore.getNombre().equals(marcador.getTitle())){
+                    restoredPOI = poiToRestore;
+                }
+            }
+
+            centroPantalla = new GeoPoint(restoredPOI.getLatitud(), restoredPOI.getLongitud());
+            if (orientacionPantalla == 2)
+                centroPantalla = new GeoPoint(centroPantalla.getLatitude() + 0.0015, centroPantalla.getLongitude());
+
+            iMapController.setCenter(centroPantalla);
+
+            Marker restoredMarker = new Marker(mapView);
+            restoredMarker.setTitle(restoredPOI.getNombre());
+            restoredMarker.setSnippet(restoredPOI.getDescripcion());
+            restoredMarker.setPosition(new GeoPoint(restoredPOI.getLatitud(), restoredPOI.getLongitud()));
+            restoredMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+            restoredMarker.setRelatedObject(restoredPOI);
+            restoredMarker.setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.marker_icon_poi));
+
+            InfoBubble infoBubbleToRestore =  new InfoBubble(mapView, this, true);
+            restoredMarker.setInfoWindow(infoBubbleToRestore);
+
+            mapView.getOverlays().remove(marcador);
+            mapView.getOverlays().add(restoredMarker);
+
+            marcadores.remove(indiceRestaurar);
+            marcadores.add(restoredMarker);
+
+            restoredMarker.showInfoWindow();
+
+            mapView.invalidate();
+        }
 
         MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(this);
         mapView.getOverlays().add(0, mapEventsOverlay);
 
+        for(Marker markerPOI: marcadores){
+            markerPOI.setOnMarkerClickListener(this);
+        }
+
         user.setOnMarkerClickListener(this);
+
+        marcadores.add(user);
     }
 
     /**
@@ -253,6 +334,94 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
     public void onDetach() { super.onDetach(); }
 
     @Override
+    public void onPause() {
+        super.onPause();
+
+        boolean valorAsignado = false;
+
+        for(int i = 0; i < marcadores.size(); i++){
+            if(marcadores.get(i).isInfoWindowShown()){
+                indiceRestaurar = i;
+                valorAsignado = true;
+                break;
+            }
+        }
+
+        if(!valorAsignado)
+            //Ninguna burbuja estaba abierta en el momento de ejecutar onPause. No es necesario restaurar el fragmento
+            indiceRestaurar = -1;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        boolean isAnyInfoWindowOpen = false;
+
+        int nuevaOrientacion = newConfig.orientation;
+
+        IGeoPoint antiguoCentroPantalla = centroPantalla;
+
+        //Comprobamos qué Marker es el que está en foco
+        for (Marker marker: marcadores) {
+            if (marker.isInfoWindowShown()) {
+                centroPantalla = marker.getPosition();
+                isAnyInfoWindowOpen = true;
+                break;
+            }
+        }
+
+        //Si el Marker que estaba abierto era un nodo de la ruta, repetir el proceso para los nodeMarker
+        if(antiguoCentroPantalla.equals(centroPantalla))
+            for (Marker nodeMarker: nodeMarkers){
+                if(nodeMarker.isInfoWindowShown()){
+                    centroPantalla = nodeMarker.getPosition();
+                    isAnyInfoWindowOpen = true;
+                    break;
+                }
+            }
+
+        ViewTreeObserver viewTreeObserver = getView().getViewTreeObserver();
+
+        if(isAnyInfoWindowOpen) {
+            //Comprobamos si ha cambiado la orientación de la pantalla
+            if (nuevaOrientacion == 2) {
+                //Orientation: Landscape
+                //Centrar el mapa en el Marker en cuestión
+                viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        getView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        centroPantalla = new GeoPoint(centroPantalla.getLatitude() + 0.0015, centroPantalla.getLongitude());
+                        mapView.getController().setCenter(centroPantalla);
+                    }
+                });
+            } else {
+                //Orientation: Portrait
+                viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        getView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        mapView.getController().setCenter(centroPantalla);
+                    }
+                });
+            }
+        }
+        else {
+            //Dejar el mapa en la posición de la cámara en la que estaba
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    getView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    centroPantalla = mapView.getMapCenter();
+                    mapView.getController().setCenter(centroPantalla);
+                }
+            });
+        }
+        orientacionPantalla = nuevaOrientacion;
+    }
+
+    @Override
     public boolean singleTapConfirmedHelper(GeoPoint geoPoint) {
         InfoWindow.closeAllInfoWindowsOn(mapView);
         return true;
@@ -268,9 +437,16 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
     public boolean onMarkerClick(Marker marker, MapView mapView) {
         InfoWindow.closeAllInfoWindowsOn(mapView);
 
+        centroPantalla = marker.getPosition();
+
+        if(orientacionPantalla == 2){
+            //Orientation: Landscape
+            centroPantalla = new GeoPoint(centroPantalla.getLatitude() + 0.0015, centroPantalla.getLongitude());
+        }
+
         //Mostrar infoWindow del Marker y centrar en su posición
         marker.showInfoWindow();
-        mapView.getController().animateTo(marker.getPosition());
+        mapView.getController().animateTo(centroPantalla);
 
         return true;
     }
@@ -293,8 +469,8 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
 
         @Override
         protected void onPreExecute() {
-            progressDialog.show();
             super.onPreExecute();
+            progressDialog.show();
         }
 
         @Override
@@ -337,15 +513,23 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
                 nodeMarker.setImage(seleccionarIcono(roadNode.mManeuverType));
 
                 overlays.add(nodeMarker);
+                nodeMarkers.add(nodeMarker);
 
                 nodeMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker, MapView mapView) {
                         InfoWindow.closeAllInfoWindowsOn(mapView);
 
+                        centroPantalla = marker.getPosition();
+
+                        if(orientacionPantalla == 2){
+                            //Orientation: Landscape
+                            centroPantalla = new GeoPoint(centroPantalla.getLatitude() + 0.0015, centroPantalla.getLongitude());
+                        }
+
                         //Mostrar infoWindow del Marker y centrar en su posición
                         marker.showInfoWindow();
-                        mapView.getController().animateTo(marker.getPosition());
+                        mapView.getController().animateTo(centroPantalla);
 
                         return true;
                     }

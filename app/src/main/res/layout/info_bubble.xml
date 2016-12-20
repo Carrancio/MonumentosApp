@@ -33,7 +33,7 @@
                 android:layout_width="20sp"
                 android:layout_height="20sp"
                 android:layout_weight="0"
-                android:background="@drawable/ic_ubication"/>
+                android:background="@drawable/btn_routing"/>
             <Button android:id="@+id/boton_mas_informacion"
                 android:layout_margin="3dp"
                 android:visibility="gone"

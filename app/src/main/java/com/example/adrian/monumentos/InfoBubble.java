@@ -1,7 +1,6 @@
 package com.example.adrian.monumentos;
 
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -50,7 +49,7 @@ class InfoBubble extends MarkerInfoWindow {
                     mapFragment.getFragmentManager()
                             .beginTransaction()
                             .replace(R.id.content_frame, wikiFragment)
-                            .addToBackStack(null)
+                            .addToBackStack("MapFragment")
                             .commit();
                 }
             }
@@ -63,8 +62,6 @@ class InfoBubble extends MarkerInfoWindow {
                 @Override
                 public void onClick(View view) {
 
-                    view.setBackground(ContextCompat.getDrawable(mView.getContext(), R.drawable.ic_ubication_pressed));
-
                     MapFragment mapFragmentPOI = new MapFragment();
                     Bundle params = new Bundle();
                     params.putString("Origen", "MapFragment");
@@ -74,7 +71,7 @@ class InfoBubble extends MarkerInfoWindow {
                     mapFragment.getFragmentManager()
                             .beginTransaction()
                             .replace(R.id.content_frame, mapFragmentPOI)
-                            .addToBackStack(null)
+                            .addToBackStack("MapFragment")
                             .commit();
                 }
             });
@@ -83,16 +80,17 @@ class InfoBubble extends MarkerInfoWindow {
 
     @Override
     public void onOpen(Object item) {
-        InfoWindow.closeAllInfoWindowsOn(getMapView());
         super.onOpen(item);
+
+        InfoWindow.closeAllInfoWindowsOn(getMapView());
+
+        Marker marker = (Marker) item;
+        poi = (POI) marker.getRelatedObject();
 
         mView.findViewById(R.id.boton_mas_informacion).setVisibility(View.VISIBLE);
 
         if(mostrarIconoUbicacion)
             mView.findViewById(R.id.boton_ruta).setVisibility(View.VISIBLE);
-
-        Marker marker = (Marker) item;
-        poi = (POI) marker.getRelatedObject();
 
         //Dibujar el logo de la App antes de descargar la imagen de WikiPedia
         ((ImageView) mView.findViewById(R.id.bubble_image)).setImageResource(R.drawable.ic_app);

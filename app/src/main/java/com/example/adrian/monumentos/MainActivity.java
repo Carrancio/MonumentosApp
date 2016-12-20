@@ -3,6 +3,7 @@ package com.example.adrian.monumentos;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -138,7 +139,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         //Fragmento inicial "Home" de la App
         final HomeFragment homeFragment = new HomeFragment();
-        getFragmentManager().beginTransaction().add(R.id.content_frame, homeFragment).commit();
+        getFragmentManager()
+                .beginTransaction()
+                .add(R.id.content_frame, homeFragment)
+                .commit();
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.navview);
@@ -153,16 +157,23 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
+                Fragment fragment;
+
                 //menu izquierdo
                 switch (item.getItemId()) {
                     case R.id.menu_inicio:
 
-                        getFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.content_frame, homeFragment)
-                                .commit();
+                        fragment = getFragmentManager().findFragmentById(R.id.content_frame);
 
-                        getSupportActionBar().setTitle(getResources().getString(R.string.menu_inicio));
+                        if(!(fragment instanceof HomeFragment)) {
+                            getFragmentManager()
+                                    .beginTransaction()
+                                    .replace(R.id.content_frame, homeFragment)
+                                    .addToBackStack("HomeFragment")
+                                    .commit();
+
+                            getSupportActionBar().setTitle(getResources().getString(R.string.menu_inicio));
+                        }
 
                         break;
 
@@ -192,15 +203,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                     case R.id.menu_ayuda:
 
-                        AboutFragment fragmentayuda = new AboutFragment();
+                        fragment = getFragmentManager().findFragmentById(R.id.content_frame);
 
-                        getFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.content_frame, fragmentayuda)
-                                .addToBackStack(null)
-                                .commit();
+                        AboutFragment aboutFragment = new AboutFragment();
 
-                        getSupportActionBar().setTitle(getResources().getString(R.string.menu_sobre_app));
+                        if(!(fragment instanceof AboutFragment)) {
+                            getFragmentManager()
+                                    .beginTransaction()
+                                    .replace(R.id.content_frame, aboutFragment)
+                                    .addToBackStack("AboutFragment")
+                                    .commit();
+
+                            getSupportActionBar().setTitle(getResources().getString(R.string.menu_sobre_app));
+                        }
 
                         break;
                 }
@@ -748,6 +763,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * a la opcion del menu
      */
     private void mostrarMapFragment(){
+        //Obtenemos una referencia al fragmento que está activo actualmente
+        Fragment fragment = getFragmentManager().findFragmentById(R.id.content_frame);
+
         MapFragment mapFragment = new MapFragment();
 
         Bundle params = new Bundle();
@@ -755,21 +773,32 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         mapFragment.setArguments(params);
 
-        getFragmentManager()
-                .beginTransaction()
-                .replace(R.id.content_frame, mapFragment)
-                .addToBackStack(null)
-                .commit();
+        if(!(fragment instanceof MapFragment)) {
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.content_frame, mapFragment)
+                    .addToBackStack("MapFragment")
+                    .commit();
+
+            getSupportActionBar().setTitle(getResources().getString(R.string.menu_mapa));
+        }
     }
 
     private void mostrarPOIListFragment(){
+        //Obtenemos una referencia al fragmento que está activo actualmente
+        Fragment fragment = getFragmentManager().findFragmentById(R.id.content_frame);
+
         POIListFragment poiListFragment = new POIListFragment();
 
-        getFragmentManager()
-                .beginTransaction()
-                .replace(R.id.content_frame, poiListFragment)
-                .addToBackStack(null)
-                .commit();
+        if(!(fragment instanceof POIListFragment)) {
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.content_frame, poiListFragment)
+                    .addToBackStack("POIListFragment")
+                    .commit();
+
+            getSupportActionBar().setTitle(R.string.menu_monumentos);
+        }
     }
 
     /**
@@ -871,7 +900,24 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onBackPressed() {
         if(drawerLayout.isDrawerOpen(navigationView))
             drawerLayout.closeDrawers();
-        else
+        else {
             super.onBackPressed();
+
+            Fragment fragment = getFragmentManager().findFragmentById(R.id.content_frame);
+
+            if(fragment instanceof HomeFragment)
+                getSupportActionBar().setTitle(getResources().getString(R.string.menu_inicio));
+            else
+                if(fragment instanceof MapFragment)
+                    getSupportActionBar().setTitle(getResources().getString(R.string.menu_mapa));
+                else
+                    if(fragment instanceof POIListFragment)
+                        getSupportActionBar().setTitle(R.string.menu_monumentos);
+                    else
+                        if(fragment instanceof AboutFragment)
+                            getSupportActionBar().setTitle(getResources().getString(R.string.menu_sobre_app));
+
+            marcarPrevItem();
+        }
     }
 }
