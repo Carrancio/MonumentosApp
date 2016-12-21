@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private static final int LOCATION_INTERVAL = 1000;
 
     /**
-     *
+     *Dialogo que se muestra mientras se realiza una espera
      */
     private ProgressDialog progressDialog;
 
@@ -297,7 +297,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     /**
-     *
+     *Metodo que crea hilo para mostrar un mapa, monumentos..
      */
     private class GETPOIs extends AsyncTask<Void, Void, Void> {
 

@@ -14,27 +14,22 @@ import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
 
 /**
  * La clase InfoBubble define la estructura y el contenido que tiene la "burbuja" de información
- * que se muestra cuando, en el mapa, el usuario hace "click" sobre un marcador referente a un POI (Point of Interest).
- * <p>
- * Esta clase utiliza una "third-party library" llamada OSMBonusPack que provee varias funcionalidades para la
- * creación de las "custom info bubble".
- * <p>
- * Enlace al repositorio github de esta biblioteca: https://github.com/MKergall/osmbonuspack
+ * que se muestra cuando, en el mapa, el usuario hace "click" sobre un marcador referente a un POI
  */
 class InfoBubble extends MarkerInfoWindow {
 
     /**
-     *
+     *Punto de interes
      */
     private POI poi;
 
     /**
-     *
+     *Nombre
      */
     private final static String POI_NOMBRE = "POI_NOMBRE";
 
     /**
-     *
+     *Url
      */
     private final static String POI_URL = "POI_URL";
 
@@ -44,6 +39,7 @@ class InfoBubble extends MarkerInfoWindow {
     private final boolean mostrarIconoUbicacion;
 
     /**
+     * Metodo que crea la burbuja
      * @param mapView
      * @param mapFragment
      * @param mostrarIconoUbicacion

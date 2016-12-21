@@ -7,14 +7,14 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 
 /**
- *
+ *Clase que muestra los errores que pueden existir
  */
 public class ErrorDialogFragment extends DialogFragment{
 
     /**
      *
      * @param savedInstanceState
-     * @return
+     * @return la alerta del error
      */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
