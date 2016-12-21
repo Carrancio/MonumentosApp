@@ -4,11 +4,10 @@
     android:layout_height="match_parent">
 
     <ImageView
-        android:contentDescription="descricion"
+        android:contentDescription="@string/descripcion"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:src="@drawable/prueba"
         android:scaleType="centerCrop" />
-
 
 </FrameLayout>

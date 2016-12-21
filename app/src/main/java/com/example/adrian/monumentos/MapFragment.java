@@ -190,12 +190,14 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
         POI poi = null;
 
         for (POI p : listaPOIs) {
+            assert nombrePoi != null;
             if (nombrePoi.equals(p.getNombre())) {
                 poi = p;
                 break;
             }
         }
 
+        assert poi != null;
         double latitud = poi.getLatitud();
         double longitud = poi.getLongitud();
         String descripcion = poi.getDescripcion();
@@ -318,6 +320,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
                 }
             }
 
+            assert restoredPOI != null;
             centroPantalla = new GeoPoint(restoredPOI.getLatitud(), restoredPOI.getLongitud());
             if (orientacionPantalla == 2)
                 centroPantalla = new GeoPoint(centroPantalla.getLatitude() + 0.0015, centroPantalla.getLongitude());

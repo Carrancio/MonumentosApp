@@ -26,6 +26,7 @@ public class ErrorDialogFragment extends DialogFragment{
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
+        assert tipoError != null;
         switch (tipoError){
             case "GPS":
                 builder = builder.setMessage(getString(R.string.error_activar_GPS_1) +' ' + getString(R.string.error_activar_GPS_2));
