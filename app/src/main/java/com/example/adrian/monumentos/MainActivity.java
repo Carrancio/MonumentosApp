@@ -1,6 +1,5 @@
 package com.example.adrian.monumentos;
 
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
@@ -46,7 +45,8 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 /**
- * Esta es la clase principal
+ * Esta es la clase principal.
+ *
  * @author Adrian Munoz Rojo
  * @author Rafael Matamoros Luque
  * @author David Carrancio Aguado
@@ -54,49 +54,110 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
 
+    /**
+     *
+     */
     private boolean permissionRequestDone = false;
 
+    /**
+     *
+     */
     private DrawerLayout drawerLayout;
+
+    /**
+     *
+     */
     private NavigationView navigationView;
 
+    /**
+     *
+     */
     private String idioma;
+
+    /**
+     *
+     */
     private final String TAG = MainActivity.class.getSimpleName();
 
+    /**
+     *
+     */
     private double latitudGPS;
+
+    /**
+     *
+     */
     private double longitudGPS;
 
-    //Radio de búsqueda por defecto (1 km)
+    /**
+     * Radio de búsqueda por defecto que por defecto es 1 km
+     */
     private int radio = 1000;
 
-    //Número máximo de POI por defecto
+
+    /**
+     * Número máximo de POIs que por defecto es 30
+     */
     private int maxPOI = 30;
 
-    //Radio de búsqueda introducido por el usuario
+    /**
+     * Radio de búsqueda introducido por el usuario
+     */
     private int inputRadioBusqueda = -1;
 
-    //Número máximo de POI introducido por el usuario
+    /**
+     * Número máximo de POI introducido por el usuario
+     */
     private int inputNMaxPOI = -1;
 
+    /**
+     *
+     */
     private GoogleApiClient mGoogleApiClient;
 
-    // Request code to use when launching the resolution activity
+    /**
+     * Request code to use when launching the resolution activity
+     */
     private static final int REQUEST_RESOLVE_ERROR = 1001;
-    // Unique tag for the error dialog fragment
+
+    /**
+     * Unique tag for the error dialog fragment
+     */
     private static final String DIALOG_ERROR = "dialog_error";
-    // Bool to track whether the app is already resolving an error
+
+    /**
+     * Bool to track whether the app is already resolving an error
+     */
     private boolean mResolvingError = false;
 
+    /**
+     *
+     */
     private static final String STATE_RESOLVING_ERROR = "resolving_error";
+
+    /**
+     *
+     */
     private static final int REQUEST_LOCATION = 2;
 
+    /**
+     *
+     */
     private static final int LOCATION_INTERVAL = 1000;
 
+    /**
+     *
+     */
     private ProgressDialog progressDialog;
 
+    /**
+     *
+     */
     private GlobalState globalState;
 
     /**
      * Creacion de  la vista
+     *
      * @param savedInstanceState Bundle
      */
     @Override
@@ -107,8 +168,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         boolean hasPermission = hasPermisosUbicacion();
 
         //Solicitar permisos de ubicación en caso de no tenerlos
-        if(!hasPermission){
-            if(permissionRequestDone)
+        if (!hasPermission) {
+            if (permissionRequestDone)
                 requestPermission();
 
             //Comprobación de que ya hemos obtenido los permisos antes de continuar
@@ -165,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                         fragment = getFragmentManager().findFragmentById(R.id.content_frame);
 
-                        if(!(fragment instanceof HomeFragment)) {
+                        if (!(fragment instanceof HomeFragment)) {
                             getFragmentManager()
                                     .beginTransaction()
                                     .replace(R.id.content_frame, homeFragment)
@@ -180,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     case R.id.menu_monumentos:
 
                         //Primero comprobamos que tanto el GPS como la conexión a Internet están activados
-                        if(isGPSAndInternetEnabled()) {
+                        if (isGPSAndInternetEnabled()) {
 
                             mostrarInformacion("Monumentos");
 
@@ -192,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     case R.id.menu_mapa:
 
                         //Primero comprobamos que tanto el GPS como la conexión a Internet están activados
-                        if(isGPSAndInternetEnabled()) {
+                        if (isGPSAndInternetEnabled()) {
 
                             mostrarInformacion("Mapa");
 
@@ -207,7 +268,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                         AboutFragment aboutFragment = new AboutFragment();
 
-                        if(!(fragment instanceof AboutFragment)) {
+                        if (!(fragment instanceof AboutFragment)) {
                             getFragmentManager()
                                     .beginTransaction()
                                     .replace(R.id.content_frame, aboutFragment)
@@ -227,7 +288,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         //Toolbar
 
-        Toolbar appbar = (Toolbar)findViewById(R.id.appbar);
+        Toolbar appbar = (Toolbar) findViewById(R.id.appbar);
         setSupportActionBar(appbar);
 
         getSupportActionBar().setHomeAsUpIndicator(R.mipmap.ic_menu);
@@ -245,7 +306,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         private final boolean mostrarMonumentos;
         private final boolean recalcularURL;
 
-        GETPOIs(ProgressDialog progressDialog, boolean mostrarMapa, boolean mostrarMonumentos, boolean recalcularURL){
+        GETPOIs(ProgressDialog progressDialog, boolean mostrarMapa, boolean mostrarMonumentos, boolean recalcularURL) {
             this.progressDialog = progressDialog;
             this.mostrarMapa = mostrarMapa;
             this.mostrarMonumentos = mostrarMonumentos;
@@ -259,13 +320,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
 
         /**
-         *OBtencion del json para obtener los POIs
+         * OBtencion del json para obtener los POIs
+         *
          * @param params Params
          */
         @Override
         protected Void doInBackground(Void... params) {
 
-            if(recalcularURL) {
+            if (recalcularURL) {
                 ArrayList<POI> listaPOIs = new ArrayList<>();
                 ArrayList<ArrayList<String>> listaPoi = new ArrayList<>();
                 String pageIds = "";
@@ -367,11 +429,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             progressDialog.dismiss();
             super.onPostExecute(aVoid);
 
-            if(mostrarMapa)
+            if (mostrarMapa)
                 mostrarMapFragment();
-            else
-                if(mostrarMonumentos)
-                    mostrarPOIListFragment();
+            else if (mostrarMonumentos)
+                mostrarPOIListFragment();
         }
     }
 
@@ -392,28 +453,26 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             ActivityCompat.requestPermissions(this,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_LOCATION);
-        }
-        else {
+        } else {
             startLocationUpdates();
 
             Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-            if(location != null) {
+            if (location != null) {
                 latitudGPS = location.getLatitude();
                 longitudGPS = location.getLongitude();
             }
         }
     }
 
-    private void startLocationUpdates(){
+    private void startLocationUpdates() {
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_LOCATION);
-        }
-        else {
+        } else {
             // Crea la localizacion
             LocationRequest locationRequest = LocationRequest.create()
                     .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
@@ -429,7 +488,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_LOCATION) {
-            if(grantResults.length == 1
+            if (grantResults.length == 1
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                 // We can now safely use the API we requested access to connect the client
@@ -492,7 +551,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-    /* Creates a dialog for an error message */
+    /**
+     * Creates a dialog for an error message
+     *
+     * @param errorCode
+     */
     private void showErrorDialog(int errorCode) {
         // Create a fragment for the error dialog
         MainActivity.ErrorDialogFragment dialogFragment = new MainActivity.ErrorDialogFragment();
@@ -503,14 +566,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         dialogFragment.show(getSupportFragmentManager(), "errordialog");
     }
 
-    /* Called from ErrorDialogFragment when the dialog is dismissed. */
+    /**
+     * Called from ErrorDialogFragment when the dialog is dismissed.
+     */
     private void onDialogDismissed() {
         mResolvingError = false;
     }
 
-    /* A fragment to display an error dialog */
+    /**
+     * A fragment to display an error dialog
+     */
     public static class ErrorDialogFragment extends DialogFragment {
-        public ErrorDialogFragment() { }
+        public ErrorDialogFragment() {
+        }
 
         @NonNull
         @Override
@@ -527,16 +595,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-    /*Comprobación permisos ubicación (GPS) concedidos*/
-    private boolean hasPermisosUbicacion(){
+    /**
+     * Comprobación permisos ubicación (GPS) concedidos
+     *
+     * @return
+     */
+    private boolean hasPermisosUbicacion() {
 
         return ActivityCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
 
     }
 
-    /*Solicitar permisos de ubicación al usuario*/
-    private void requestPermission(){
+    /**
+     * Solicitar permisos de ubicación al usuario
+     */
+    private void requestPermission() {
 
         // Check Permissions Now
         ActivityCompat.requestPermissions(this,
@@ -547,40 +621,55 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     /**
      * Método encargado de comprobar si se han obtenido ya las coordenadas GPS y, en caso contrario, obtenerlas
      */
-    private void obtenerCoordenadasGPS(){ mGoogleApiClient.reconnect(); }
+    private void obtenerCoordenadasGPS() {
+        mGoogleApiClient.reconnect();
+    }
 
     /**
      * Método que obtiene los datos necesarios para MapFragment
+     *
+     * @return
      */
-    public Bundle obtenerArgumentos(){
+    public Bundle obtenerArgumentos() {
 
         //Almacenamos los datos necesarios para la utilización de HomeFragment
         Bundle params = new Bundle();
 
-        params.putDouble("latitudGPS",latitudGPS);
+        params.putDouble("latitudGPS", latitudGPS);
         params.putDouble("longitudGPS", longitudGPS);
 
         return params;
     }
 
+    /**
+     * @param outState
+     * @param outPersistentState
+     */
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
         outState.putBoolean(STATE_RESOLVING_ERROR, mResolvingError);
     }
 
+    /**
+     * @param location
+     */
     @Override
     public void onLocationChanged(Location location) {
 
         latitudGPS = location.getLatitude();
         longitudGPS = location.getLongitude();
 
-        if((latitudGPS != 0.0) && (longitudGPS != 0.0)){
+        if ((latitudGPS != 0.0) && (longitudGPS != 0.0)) {
             // Disconnecting the client invalidates it.
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
     }
 
+    /**
+     * @param item
+     * @return
+     */
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
@@ -596,6 +685,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     /**
      * Inflamos el menu lateral
+     *
      * @param menu que hemos creado
      * @return true si el menu esta inflado
      */
@@ -608,6 +698,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     /**
      * Menu a la izquierda
+     *
      * @param menu
      * @return menu a la izquierda
      */
@@ -618,17 +709,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     /**
-     *  Comprueba si se ha introducido bien los datos del numero de POIs y el radio
+     * Comprueba si se ha introducido bien los datos del numero de POIs y el radio
+     *
+     * @param tipoInfo
      */
-    public void mostrarInformacion(String tipoInfo){
+    public void mostrarInformacion(String tipoInfo) {
 
         boolean mostrarMapa, mostrarMonumentos;
 
-        if(tipoInfo.equals("Mapa")){
+        if (tipoInfo.equals("Mapa")) {
             mostrarMapa = true;
-            mostrarMonumentos =false;
-        }
-        else{
+            mostrarMonumentos = false;
+        } else {
             mostrarMonumentos = true;
             mostrarMapa = false;
         }
@@ -640,16 +732,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         boolean hayInformacionPrevia = !globalState.getListaPOIs().isEmpty();
 
-        switch (hayNuevaInformacion){
+        switch (hayNuevaInformacion) {
             case 0:
                 //El usuario no ha introducido ningún parámetro
-                if(hayInformacionPrevia)
-                    if((maxPOI == 30) && (radio == 1000)) {
+                if (hayInformacionPrevia)
+                    if ((maxPOI == 30) && (radio == 1000)) {
                         //La información que hay es la información por defecto
                         //Sólamente hay que mostrar la información que ya teníamos guardada
                         new GETPOIs(progressDialog, mostrarMapa, mostrarMonumentos, false).execute();
-                    }
-                    else {
+                    } else {
                         //La información que hay es distinta de la información por defecto
                         maxPOI = 30;
                         radio = 1000;
@@ -663,8 +754,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             case 1:
                 //El usuario sólo ha introducido el parámetro "nMaxPOI"
-                if(hayInformacionPrevia)
-                    if(inputNMaxPOI == maxPOI)
+                if (hayInformacionPrevia)
+                    if (inputNMaxPOI == maxPOI)
                         //La información introducida por el usuario es la misma que se tenía previamente
                         new GETPOIs(progressDialog, mostrarMapa, mostrarMonumentos, false).execute();
                     else {
@@ -681,8 +772,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             case 2:
                 //El usuario sólo ha introducido el parámetro "Radio"
-                if(hayInformacionPrevia)
-                    if(inputRadioBusqueda == radio)
+                if (hayInformacionPrevia)
+                    if (inputRadioBusqueda == radio)
                         //La información introducida por el usuario es la misma que se tenía previamente
                         new GETPOIs(progressDialog, mostrarMapa, mostrarMonumentos, false).execute();
                     else {
@@ -699,33 +790,29 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             case 3:
                 //El usuario ha introducido tanto el parámetro "nMaxPOI" como "Radio"
-                if(hayInformacionPrevia){
-                    if(inputNMaxPOI == maxPOI){
-                        if(inputRadioBusqueda == radio){
+                if (hayInformacionPrevia) {
+                    if (inputNMaxPOI == maxPOI) {
+                        if (inputRadioBusqueda == radio) {
                             //La información que se tiene es la misma que ha introducido el usuario. Sólo es necesario mostrar, no hay que obtenerla de nuevo
                             new GETPOIs(progressDialog, mostrarMapa, mostrarMonumentos, false).execute();
-                        }
-                        else {
+                        } else {
                             //La información introducida por el usuario es distinta de la que teníamos para el parámetro "Radio"
                             radio = inputRadioBusqueda;
                             new GETPOIs(progressDialog, mostrarMapa, mostrarMonumentos, true).execute();
                         }
-                    }
-                    else {
-                        if(inputRadioBusqueda == radio){
+                    } else {
+                        if (inputRadioBusqueda == radio) {
                             //La información introducida por el usuario es distinta de la que teníamos para el parámetros "nMaxPOI"
                             maxPOI = inputNMaxPOI;
                             new GETPOIs(progressDialog, mostrarMapa, mostrarMonumentos, true).execute();
-                        }
-                        else {
+                        } else {
                             //La información introducida por el usuario es distinta de la que teníamos para ambos parámetros
                             maxPOI = inputNMaxPOI;
                             radio = inputRadioBusqueda;
                             new GETPOIs(progressDialog, mostrarMapa, mostrarMonumentos, true).execute();
                         }
                     }
-                }
-                else {
+                } else {
                     //No se tiene información previa, luego hay que obtener los POIs de 0
                     maxPOI = inputNMaxPOI;
                     radio = inputRadioBusqueda;
@@ -735,25 +822,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-    private int usuarioHaIntroducidoInformacion(){
+    /**
+     * @return
+     */
+    private int usuarioHaIntroducidoInformacion() {
         if (inputNMaxPOI != -1) {
             //El usuario ha introducido un valor para "nMaxPOI"
             if (inputRadioBusqueda != -1) {
                 //El usuario ha introducido un valor para "Radio" y "nMaxPOI"
                 return 3;
-            }
-            else {
+            } else {
                 //Sólo se ha introducido un valor para "nMaxPOI"
                 return 1;
             }
-        }
-        else {
+        } else {
             //El usuario NO ha introducido un valor para "nMaxPOI"
             if (inputRadioBusqueda != -1) {
                 //Sólo se ha introducido un valor para "Radio"
                 return 2;
-            }
-            else {
+            } else {
                 //El usuario no ha introducido nada
                 return 0;
             }
@@ -761,10 +848,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     /**
-     * * Metodo que usamos para mostrar el Mapa en el fragmento si das
-     * a la opcion del menu
+     * Metodo que usamos para mostrar el Mapa en el fragmento si da a la opcion del menu
      */
-    private void mostrarMapFragment(){
+    private void mostrarMapFragment() {
         //Obtenemos una referencia al fragmento que está activo actualmente
         Fragment fragment = getFragmentManager().findFragmentById(R.id.content_frame);
 
@@ -775,7 +861,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         mapFragment.setArguments(params);
 
-        if(!(fragment instanceof MapFragment)) {
+        if (!(fragment instanceof MapFragment)) {
             getFragmentManager()
                     .beginTransaction()
                     .replace(R.id.content_frame, mapFragment)
@@ -786,13 +872,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-    private void mostrarPOIListFragment(){
+    /**
+     *
+     */
+    private void mostrarPOIListFragment() {
         //Obtenemos una referencia al fragmento que está activo actualmente
         Fragment fragment = getFragmentManager().findFragmentById(R.id.content_frame);
 
         POIListFragment poiListFragment = new POIListFragment();
 
-        if(!(fragment instanceof POIListFragment)) {
+        if (!(fragment instanceof POIListFragment)) {
             getFragmentManager()
                     .beginTransaction()
                     .replace(R.id.content_frame, poiListFragment)
@@ -807,13 +896,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * Metodo que comprueba si se obtienen las coordenadas GPS
      * Si no las obtiene, se pondrán las de Valladolid por defecto
      */
-    private void comprobarObtencionCoordenadas(){
+    private void comprobarObtencionCoordenadas() {
         //Primera comprobación de que se han obtenido las coordenadas del GPS
-        if((latitudGPS == 0.0) && (longitudGPS == 0.0)){
+        if ((latitudGPS == 0.0) && (longitudGPS == 0.0)) {
             obtenerCoordenadasGPS();
         }
 
-        if((latitudGPS == 0.0) && (longitudGPS == 0.0)) {
+        if ((latitudGPS == 0.0) && (longitudGPS == 0.0)) {
             /* Si aún después de un segundo intento, se sigue sin haber podido obtener las coordenadas del GPS, utilizar
              * las coordenadas por defecto (latitudPorDefecto, longitudPorDefecto) antes de crear el fragmento
              */
@@ -827,9 +916,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     /**
      * Metodo que comprueba si el GPS y Internet están activados
+     *
      * @return si alguno no esta activado devuelve un dialogo, si no, no devuelve nada
      */
-    public boolean isGPSAndInternetEnabled(){
+    public boolean isGPSAndInternetEnabled() {
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         String tipoError = "";
@@ -846,27 +936,44 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                 tipoError = "GPS";
             }
-        }
-        else {
+        } else {
             showDialog = true;
 
             tipoError = "INTERNET";
         }
 
-        if(showDialog){
+        if (showDialog) {
             showErrorDialog(tipoError);
         }
 
         return !showDialog;
     }
 
-    public NavigationView getNavigationView() { return navigationView; }
+    /**
+     * @return
+     */
+    public NavigationView getNavigationView() {
+        return navigationView;
+    }
 
-    public void setInputRadioBusqueda(int inputRadioBusqueda) { this.inputRadioBusqueda = inputRadioBusqueda; }
+    /**
+     * @param inputRadioBusqueda
+     */
+    public void setInputRadioBusqueda(int inputRadioBusqueda) {
+        this.inputRadioBusqueda = inputRadioBusqueda;
+    }
 
-    public void setInputNMaxPOI(int inputNMaxPOI) { this.inputNMaxPOI = inputNMaxPOI; }
+    /**
+     * @param inputNMaxPOI
+     */
+    public void setInputNMaxPOI(int inputNMaxPOI) {
+        this.inputNMaxPOI = inputNMaxPOI;
+    }
 
-    public void showErrorDialog(String tipoError){
+    /**
+     * @param tipoError
+     */
+    public void showErrorDialog(String tipoError) {
 
         Bundle params = new Bundle();
 
@@ -878,20 +985,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         errorDialogFragment.show(getFragmentManager(), "ErrorDialog");
     }
 
-    public void marcarPrevItem(){
+    /**
+     *
+     */
+    public void marcarPrevItem() {
 
         String navigationTitle = getSupportActionBar().getTitle().toString();
 
-        if(navigationTitle.equals(getResources().getString(R.string.menu_inicio)))
+        if (navigationTitle.equals(getResources().getString(R.string.menu_inicio)))
             navigationView.getMenu().getItem(0).setChecked(true);
+        else if (navigationTitle.equals(getResources().getString(R.string.menu_monumentos)))
+            navigationView.getMenu().getItem(1).setChecked(true);
+        else if (navigationTitle.equals(getResources().getString(R.string.menu_mapa)))
+            navigationView.getMenu().getItem(2).setChecked(true);
         else
-            if(navigationTitle.equals(getResources().getString(R.string.menu_monumentos)))
-                navigationView.getMenu().getItem(1).setChecked(true);
-            else
-                if(navigationTitle.equals(getResources().getString(R.string.menu_mapa)))
-                    navigationView.getMenu().getItem(2).setChecked(true);
-                else
-                    navigationView.getMenu().getItem(3).setChecked(true);
+            navigationView.getMenu().getItem(3).setChecked(true);
     }
 
     /**
@@ -900,24 +1008,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     @Override
     public void onBackPressed() {
-        if(drawerLayout.isDrawerOpen(navigationView))
+        if (drawerLayout.isDrawerOpen(navigationView))
             drawerLayout.closeDrawers();
         else {
             super.onBackPressed();
 
             Fragment fragment = getFragmentManager().findFragmentById(R.id.content_frame);
 
-            if(fragment instanceof HomeFragment)
+            if (fragment instanceof HomeFragment)
                 getSupportActionBar().setTitle(getResources().getString(R.string.menu_inicio));
-            else
-                if(fragment instanceof MapFragment)
-                    getSupportActionBar().setTitle(getResources().getString(R.string.menu_mapa));
-                else
-                    if(fragment instanceof POIListFragment)
-                        getSupportActionBar().setTitle(R.string.menu_monumentos);
-                    else
-                        if(fragment instanceof AboutFragment)
-                            getSupportActionBar().setTitle(getResources().getString(R.string.menu_sobre_app));
+            else if (fragment instanceof MapFragment)
+                getSupportActionBar().setTitle(getResources().getString(R.string.menu_mapa));
+            else if (fragment instanceof POIListFragment)
+                getSupportActionBar().setTitle(R.string.menu_monumentos);
+            else if (fragment instanceof AboutFragment)
+                getSupportActionBar().setTitle(getResources().getString(R.string.menu_sobre_app));
 
             marcarPrevItem();
         }

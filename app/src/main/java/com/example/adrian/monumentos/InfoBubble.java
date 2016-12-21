@@ -15,22 +15,40 @@ import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
 /**
  * La clase InfoBubble define la estructura y el contenido que tiene la "burbuja" de información
  * que se muestra cuando, en el mapa, el usuario hace "click" sobre un marcador referente a un POI (Point of Interest).
- *
+ * <p>
  * Esta clase utiliza una "third-party library" llamada OSMBonusPack que provee varias funcionalidades para la
  * creación de las "custom info bubble".
- *
+ * <p>
  * Enlace al repositorio github de esta biblioteca: https://github.com/MKergall/osmbonuspack
  */
 class InfoBubble extends MarkerInfoWindow {
 
+    /**
+     *
+     */
     private POI poi;
 
+    /**
+     *
+     */
     private final static String POI_NOMBRE = "POI_NOMBRE";
+
+    /**
+     *
+     */
     private final static String POI_URL = "POI_URL";
 
+    /**
+     *
+     */
     private final boolean mostrarIconoUbicacion;
 
-    InfoBubble(MapView mapView, final MapFragment mapFragment, boolean mostrarIconoUbicacion){
+    /**
+     * @param mapView
+     * @param mapFragment
+     * @param mostrarIconoUbicacion
+     */
+    InfoBubble(MapView mapView, final MapFragment mapFragment, boolean mostrarIconoUbicacion) {
         super(R.layout.info_bubble, mapView);
 
         this.mostrarIconoUbicacion = mostrarIconoUbicacion;
@@ -55,7 +73,7 @@ class InfoBubble extends MarkerInfoWindow {
             }
         });
 
-        if(mostrarIconoUbicacion) {
+        if (mostrarIconoUbicacion) {
             Button boton_ruta = (Button) mView.findViewById(R.id.boton_ruta);
 
             boton_ruta.setOnClickListener(new View.OnClickListener() {
@@ -78,6 +96,9 @@ class InfoBubble extends MarkerInfoWindow {
         }
     }
 
+    /**
+     * @param item
+     */
     @Override
     public void onOpen(Object item) {
         super.onOpen(item);
@@ -89,7 +110,7 @@ class InfoBubble extends MarkerInfoWindow {
 
         mView.findViewById(R.id.boton_mas_informacion).setVisibility(View.VISIBLE);
 
-        if(mostrarIconoUbicacion)
+        if (mostrarIconoUbicacion)
             mView.findViewById(R.id.boton_ruta).setVisibility(View.VISIBLE);
 
         //Dibujar el logo de la App antes de descargar la imagen de WikiPedia

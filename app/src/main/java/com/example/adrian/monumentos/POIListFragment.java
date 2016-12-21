@@ -1,4 +1,5 @@
 package com.example.adrian.monumentos;
+
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -11,22 +12,33 @@ import android.view.ViewGroup;
 
 /**
  * Esta clase sirve para mostrar datos de los POIs
+ *
  * @author Adrian Munoz Rojo
  * @author Rafael Matamoros Luque
  * @author David Carrancio Aguado
- *
  */
-
-public class POIListFragment extends Fragment{
+public class POIListFragment extends Fragment {
 
     /**
      * Constructor vacio
      */
-    public POIListFragment() {}
+    public POIListFragment() {
+    }
 
+    /**
+     * @param savedInstanceState
+     */
     @Override
-    public void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState); }
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
+    /**
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,9 +60,19 @@ public class POIListFragment extends Fragment{
         return vista;
     }
 
+    /**
+     * @param context
+     */
     @Override
-    public void onAttach(Context context) { super.onAttach(context); }
+    public void onAttach(Context context) {
+        super.onAttach(context);
+    }
 
+    /**
+     *
+     */
     @Override
-    public void onDetach() { super.onDetach(); }
+    public void onDetach() {
+        super.onDetach();
+    }
 }
