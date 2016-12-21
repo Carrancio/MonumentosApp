@@ -15,24 +15,44 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+
 /**
  * Esta clase sirve para obtener datos de cada POI
+ *
  * @author Adrian Munoz Rojo
  * @author Rafael Matamoros Luque
  * @author David Carrancio Aguado
- *
  */
-
-
 class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHolder> {
 
+    /**
+     *
+     */
     private final ArrayList<POI> poiList;
+
+    /**
+     *
+     */
     private final Context context;
+
+    /**
+     *
+     */
     private final POIListFragment poiListFragment;
 
+    /**
+     *
+     */
     final static String POI_URL = "POI_URL";
+
+    /**
+     *
+     */
     private final static String POI_NOMBRE = "POI_NOMBRE";
 
+    /**
+     *
+     */
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         //Elementos de una CardView
@@ -52,18 +72,27 @@ class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHolder> {
         }
     }
 
-    POIListAdapter(Context context, POIListFragment poiListFragment){
+    /**
+     * @param context
+     * @param poiListFragment
+     */
+    POIListAdapter(Context context, POIListFragment poiListFragment) {
         this.context = context;
         this.poiListFragment = poiListFragment;
         GlobalState globalState = (GlobalState) context.getApplicationContext();
         this.poiList = globalState.getListaPOIs();
     }
 
-
-    //Crea una nueva vista (invocado por el LayoutManager)
+    /**
+     * Crea una nueva vista (invocado por el LayoutManager)
+     *
+     * @param parent
+     * @param viewType
+     * @return
+     */
     @Override
     public POIListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                        int viewType){
+                                                        int viewType) {
 
         View vista = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.poi_miniatura, parent, false);
@@ -71,7 +100,10 @@ class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHolder> {
         return new ViewHolder(vista);
     }
 
-
+    /**
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
@@ -118,8 +150,7 @@ class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHolder> {
                     transaction.commit();
                 }
             });
-        }
-        else {
+        } else {
             Toast.makeText(context, "No se ha podido obtener la ubicación de este punto de interés", Toast.LENGTH_LONG).show();
         }
 
@@ -149,8 +180,11 @@ class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHolder> {
         }
     }
 
-
-
+    /**
+     * @return
+     */
     @Override
-    public int getItemCount() { return poiList.size(); }
+    public int getItemCount() {
+        return poiList.size();
+    }
 }

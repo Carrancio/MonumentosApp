@@ -9,8 +9,14 @@ import java.util.ArrayList;
  */
 public class GlobalState extends MultiDexApplication {
 
+    /**
+     *
+     */
     private ArrayList<POI> listaPOIs;
 
+    /**
+     *
+     */
     @Override
     public void onCreate() {
         super.onCreate();
@@ -18,7 +24,15 @@ public class GlobalState extends MultiDexApplication {
         listaPOIs = new ArrayList<>();
     }
 
+    /**
+     *
+     * @return
+     */
     public ArrayList<POI> getListaPOIs() { return listaPOIs; }
 
+    /**
+     *
+     * @param listaPOIs
+     */
     public void setListaPOIs(ArrayList<POI> listaPOIs) { this.listaPOIs = listaPOIs; }
 }

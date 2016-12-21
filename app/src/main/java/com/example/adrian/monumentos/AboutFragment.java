@@ -9,10 +9,11 @@ import android.view.ViewGroup;
 /**
  * Creación del Fragmento
  */
-
 public class AboutFragment extends Fragment {
 
-
+    /**
+     *
+     */
     public AboutFragment() {
         // Required empty public constructor
     }
@@ -28,7 +29,7 @@ public class AboutFragment extends Fragment {
      * @param inflater
      * @param container
      * @param savedInstanceState
-     * @return fragmento
+     * @return                   fragmento
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

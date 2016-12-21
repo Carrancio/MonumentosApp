@@ -12,25 +12,36 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
 /**
  * Esta clase muestra un fragmento con la informacion de la wikipedia de cada POI
+ *
  * @author Adrian Munoz Rojo
  * @author Rafael Matamoros Luque
  * @author David Carrancio Aguado
- *
  */
+public class WikiFragment extends Fragment {
 
-public class WikiFragment extends Fragment{
     /**
      * Constructor por defecto
      */
-    public WikiFragment() {}
+    public WikiFragment() {
+    }
 
+    /**
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+    /**
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @SuppressLint("SetJavaScriptEnabled")
     @Nullable
     @Override
@@ -52,11 +63,17 @@ public class WikiFragment extends Fragment{
         return vista;
     }
 
+    /**
+     * @param context
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
     }
 
+    /**
+     *
+     */
     @Override
     public void onDetach() {
         super.onDetach();

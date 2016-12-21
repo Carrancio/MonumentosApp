@@ -35,34 +35,73 @@ import java.util.List;
 
 /**
  * Esta clase muestra un mapa con las posiciones de los monumentos y nuestra posicion
+ *
  * @author Adrian Munoz Rojo
  * @author Rafael Matamoros Luque
  * @author David Carrancio Aguado
- *
  */
-public class MapFragment extends Fragment implements MapEventsReceiver, Marker.OnMarkerClickListener{
+public class MapFragment extends Fragment implements MapEventsReceiver, Marker.OnMarkerClickListener {
 
+    /**
+     *
+     */
     private final static String POI_NOMBRE = "POI_NOMBRE";
+
+    /**
+     *
+     */
     private Bundle params;
+
+    /**
+     *
+     */
     private double latitudGPS, longitudGPS;
 
+    /**
+     *
+     */
     private MapView mapView;
 
+    /**
+     *
+     */
     private GlobalState globalState;
 
+    /**
+     *
+     */
     private int orientacionPantalla;
 
+    /**
+     *
+     */
     private IGeoPoint centroPantalla;
 
+    /**
+     *
+     */
     private final ArrayList<Marker> marcadores = new ArrayList<>();
+
+    /**
+     *
+     */
     private final ArrayList<Marker> nodeMarkers = new ArrayList<>();
 
+    /**
+     *
+     */
     private int indiceRestaurar = -1;
 
+    /**
+     *
+     */
     private Bundle fragmentToRestore = new Bundle();
 
-    //Constructor por defecto
-    public MapFragment(){}
+    /**
+     * Constructor por defecto
+     */
+    public MapFragment() {
+    }
 
     /**
      * Called to do initial creation of a fragment.  This is called after
@@ -132,7 +171,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
         mapView.setTilesScaledToDpi(true);
 
 
-        if((params.getString("Origen").equals("POIListAdapter")) || (params.getString("Origen").equals("MapFragment")))
+        if ((params.getString("Origen").equals("POIListAdapter")) || (params.getString("Origen").equals("MapFragment")))
             mostrarMapaPOI();
         else
             mostrarMapaUsuario();
@@ -140,18 +179,18 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
         return vista;
     }
 
-    /*
+    /**
      * Método que se encarga de mostrar un mapa centrado en la ubicación del POI.
      * Además muestra la ubicación del usuario
-     * */
-    private void mostrarMapaPOI(){
+     */
+    private void mostrarMapaPOI() {
 
         String nombrePoi = params.getString(POI_NOMBRE);
         ArrayList<POI> listaPOIs = globalState.getListaPOIs();
         POI poi = null;
 
-        for(POI p : listaPOIs){
-            if(nombrePoi.equals(p.getNombre())) {
+        for (POI p : listaPOIs) {
+            if (nombrePoi.equals(p.getNombre())) {
                 poi = p;
                 break;
             }
@@ -167,7 +206,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
         iMapController.setZoom(14);
 
         centroPantalla = point;
-        if(orientacionPantalla == 2)
+        if (orientacionPantalla == 2)
             centroPantalla = new GeoPoint(centroPantalla.getLatitude() + 0.0015, centroPantalla.getLongitude());
 
         iMapController.setCenter(centroPantalla);
@@ -180,11 +219,11 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
         marker.setRelatedObject(poi);
         marker.setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.marker_icon_poi));
 
-        InfoBubble infoBubble =  new InfoBubble(mapView, this, false);
+        InfoBubble infoBubble = new InfoBubble(mapView, this, false);
         marker.setInfoWindow(infoBubble);
 
         //Ubicación del usuario
-        GeoPoint miUbicacion = new GeoPoint(latitudGPS ,longitudGPS);
+        GeoPoint miUbicacion = new GeoPoint(latitudGPS, longitudGPS);
 
         Marker user = new Marker(mapView);
         user.setTitle(getResources().getString(R.string.ubication));
@@ -215,11 +254,15 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
      * Método que se encarga de mostrar un mapa centrado en la posición del usuario, y las ubicaciones
      * de los POI cercanos
      * */
+
+    /**
+     * Método que se encarga de mostrar un mapa centrado en la posición del usuario y las ubicaciones de los POI cercanos
+     */
     private void mostrarMapaUsuario() {
 
         ArrayList<POI> listaPOIs = globalState.getListaPOIs();
 
-        InfoBubble infoBubble =  new InfoBubble(mapView, this, true);
+        InfoBubble infoBubble = new InfoBubble(mapView, this, true);
 
         //Añadir marcadores al mapa con la información de cada POI
         for (POI poi : listaPOIs) {
@@ -240,7 +283,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
         }
 
         //Ubicación del usuario
-        GeoPoint miUbicacion = new GeoPoint(latitudGPS ,longitudGPS);
+        GeoPoint miUbicacion = new GeoPoint(latitudGPS, longitudGPS);
 
         Marker user = new Marker(mapView);
         user.setTitle(getResources().getString(R.string.ubication));
@@ -253,7 +296,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
         IMapController iMapController = mapView.getController();
         iMapController.setZoom(14);
 
-        if(indiceRestaurar == -1) {
+        if (indiceRestaurar == -1) {
             centroPantalla = miUbicacion;
             if (orientacionPantalla == 2)
                 centroPantalla = new GeoPoint(centroPantalla.getLatitude() + 0.0015, centroPantalla.getLongitude());
@@ -263,15 +306,14 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
             user.showInfoWindow();
 
             mapView.invalidate();
-        }
-        else {
+        } else {
             //El fragmento está siendo restaurado de un estado anterior
             Marker marcador = marcadores.get(indiceRestaurar);
 
             POI restoredPOI = null;
 
-            for(POI poiToRestore: listaPOIs){
-                if(poiToRestore.getNombre().equals(marcador.getTitle())){
+            for (POI poiToRestore : listaPOIs) {
+                if (poiToRestore.getNombre().equals(marcador.getTitle())) {
                     restoredPOI = poiToRestore;
                 }
             }
@@ -290,7 +332,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
             restoredMarker.setRelatedObject(restoredPOI);
             restoredMarker.setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.marker_icon_poi));
 
-            InfoBubble infoBubbleToRestore =  new InfoBubble(mapView, this, true);
+            InfoBubble infoBubbleToRestore = new InfoBubble(mapView, this, true);
             restoredMarker.setInfoWindow(infoBubbleToRestore);
 
             mapView.getOverlays().remove(marcador);
@@ -307,7 +349,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
         MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(this);
         mapView.getOverlays().add(0, mapEventsOverlay);
 
-        for(Marker markerPOI: marcadores){
+        for (Marker markerPOI : marcadores) {
             markerPOI.setOnMarkerClickListener(this);
         }
 
@@ -323,7 +365,9 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
      * @param context Context
      */
     @Override
-    public void onAttach(Context context) { super.onAttach(context); }
+    public void onAttach(Context context) {
+        super.onAttach(context);
+    }
 
     /**
      * Called when the fragment is no longer attached to its activity.  This is called after
@@ -332,27 +376,35 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
      * after {@link #onStop()}.
      */
     @Override
-    public void onDetach() { super.onDetach(); }
+    public void onDetach() {
+        super.onDetach();
+    }
 
+    /**
+     *
+     */
     @Override
     public void onPause() {
         super.onPause();
 
         boolean valorAsignado = false;
 
-        for(int i = 0; i < marcadores.size(); i++){
-            if(marcadores.get(i).isInfoWindowShown()){
+        for (int i = 0; i < marcadores.size(); i++) {
+            if (marcadores.get(i).isInfoWindowShown()) {
                 indiceRestaurar = i;
                 valorAsignado = true;
                 break;
             }
         }
 
-        if(!valorAsignado)
+        if (!valorAsignado)
             //Ninguna burbuja estaba abierta en el momento de ejecutar onPause. No es necesario restaurar el fragmento
             indiceRestaurar = -1;
     }
 
+    /**
+     * @param newConfig
+     */
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -364,7 +416,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
         IGeoPoint antiguoCentroPantalla = centroPantalla;
 
         //Comprobamos qué Marker es el que está en foco
-        for (Marker marker: marcadores) {
+        for (Marker marker : marcadores) {
             if (marker.isInfoWindowShown()) {
                 centroPantalla = marker.getPosition();
                 isAnyInfoWindowOpen = true;
@@ -373,9 +425,9 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
         }
 
         //Si el Marker que estaba abierto era un nodo de la ruta, repetir el proceso para los nodeMarker
-        if(antiguoCentroPantalla.equals(centroPantalla))
-            for (Marker nodeMarker: nodeMarkers){
-                if(nodeMarker.isInfoWindowShown()){
+        if (antiguoCentroPantalla.equals(centroPantalla))
+            for (Marker nodeMarker : nodeMarkers) {
+                if (nodeMarker.isInfoWindowShown()) {
                     centroPantalla = nodeMarker.getPosition();
                     isAnyInfoWindowOpen = true;
                     break;
@@ -384,7 +436,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
 
         ViewTreeObserver viewTreeObserver = getView().getViewTreeObserver();
 
-        if(isAnyInfoWindowOpen) {
+        if (isAnyInfoWindowOpen) {
             //Comprobamos si ha cambiado la orientación de la pantalla
             if (nuevaOrientacion == 2) {
                 //Orientation: Landscape
@@ -407,8 +459,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
                     }
                 });
             }
-        }
-        else {
+        } else {
             //Dejar el mapa en la posición de la cámara en la que estaba
             viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
@@ -422,25 +473,38 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
         orientacionPantalla = nuevaOrientacion;
     }
 
+    /**
+     * @param geoPoint
+     * @return
+     */
     @Override
     public boolean singleTapConfirmedHelper(GeoPoint geoPoint) {
         InfoWindow.closeAllInfoWindowsOn(mapView);
         return true;
     }
 
+    /**
+     * @param geoPoint
+     * @return
+     */
     @Override
     public boolean longPressHelper(GeoPoint geoPoint) {
         //No hacer nada. No capturamos este tipo de eventos
         return false;
     }
 
+    /**
+     * @param marker
+     * @param mapView
+     * @return
+     */
     @Override
     public boolean onMarkerClick(Marker marker, MapView mapView) {
         InfoWindow.closeAllInfoWindowsOn(mapView);
 
         centroPantalla = marker.getPosition();
 
-        if(orientacionPantalla == 2){
+        if (orientacionPantalla == 2) {
             //Orientation: Landscape
             centroPantalla = new GeoPoint(centroPantalla.getLatitude() + 0.0015, centroPantalla.getLongitude());
         }
@@ -452,7 +516,10 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
         return true;
     }
 
-    private class crearRuta extends AsyncTask<Void, Void, Void>{
+    /**
+     *
+     */
+    private class crearRuta extends AsyncTask<Void, Void, Void> {
 
         private final GeoPoint inicio;
         private final GeoPoint fin;
@@ -461,7 +528,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
         private final Marker user;
         private final Marker poi;
 
-        crearRuta(ProgressDialog progressDialog, GeoPoint inicio, GeoPoint fin, List<Overlay> overlays, Marker user, Marker poi){
+        crearRuta(ProgressDialog progressDialog, GeoPoint inicio, GeoPoint fin, List<Overlay> overlays, Marker user, Marker poi) {
             this.progressDialog = progressDialog;
             this.inicio = inicio;
             this.fin = fin;
@@ -497,12 +564,12 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
 
             String subdescripcion;
 
-            for (int i = 1; i<road.mNodes.size() - 1; i++){
+            for (int i = 1; i < road.mNodes.size() - 1; i++) {
                 RoadNode roadNode = road.mNodes.get(i);
                 Marker nodeMarker = new Marker(mapView);
                 nodeMarker.setPosition(roadNode.mLocation);
                 nodeMarker.setIcon(nodeIcon);
-                nodeMarker.setTitle("Paso "+i);
+                nodeMarker.setTitle("Paso " + i);
 
                 cambiarInstrucciones(roadNode);
                 actualizarDatos(road, i);
@@ -525,7 +592,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
 
                         centroPantalla = marker.getPosition();
 
-                        if(orientacionPantalla == 2){
+                        if (orientacionPantalla == 2) {
                             //Orientation: Landscape
                             centroPantalla = new GeoPoint(centroPantalla.getLatitude() + 0.0015, centroPantalla.getLongitude());
                         }
@@ -571,7 +638,10 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
         }
     }
 
-    private void cambiarInstrucciones(RoadNode roadNode){
+    /**
+     * @param roadNode
+     */
+    private void cambiarInstrucciones(RoadNode roadNode) {
 
         String calle = "";
         boolean añadirCalle = false;
@@ -581,11 +651,11 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
                 calle = roadNode.mInstructions.split(" on ")[1];
                 añadirCalle = true;
             }
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             //NO hacer nada
         }
 
-        switch (roadNode.mManeuverType){
+        switch (roadNode.mManeuverType) {
             case 0:
                 roadNode.mInstructions = "Continúa";
                 break;
@@ -708,42 +778,53 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
                 break;
         }
 
-        if(añadirCalle){
+        if (añadirCalle) {
             roadNode.mInstructions += " por " + calle;
         }
     }
 
-    private void actualizarDatos(Road road, int indice){
+    /**
+     * @param road
+     * @param indice
+     */
+    private void actualizarDatos(Road road, int indice) {
         ArrayList<RoadNode> roadNodes = road.mNodes;
         RoadNode roadNode = roadNodes.get(indice);
 
-        for(int i = indice + 1; i < roadNodes.size(); i++){
+        for (int i = indice + 1; i < roadNodes.size(); i++) {
             roadNode.mLength += roadNodes.get(i).mLength;
             roadNode.mDuration += roadNodes.get(i).mDuration;
         }
     }
 
-    private String introducirEspacios(String subdescripcion){
+    /**
+     * @param subdescripcion
+     * @return
+     */
+    private String introducirEspacios(String subdescripcion) {
         //Medidas de distancia:
-        if(subdescripcion.contains("km"))
+        if (subdescripcion.contains("km"))
             subdescripcion = subdescripcion.replace("km", " km");
         else
             subdescripcion = subdescripcion.replace("m", " m");
 
         //Medidas de tiempo:
-        if(subdescripcion.contains("sec"))
+        if (subdescripcion.contains("sec"))
             subdescripcion = subdescripcion.replace("sec", " seg");
+        else if (subdescripcion.contains("min"))
+            subdescripcion = subdescripcion.replace("min", " min");
         else
-            if(subdescripcion.contains("min"))
-                subdescripcion = subdescripcion.replace("min", " min");
-            else
-                subdescripcion = subdescripcion.replace("h", " h");
+            subdescripcion = subdescripcion.replace("h", " h");
 
 
         return subdescripcion;
     }
 
-    private Drawable seleccionarIcono(int maneuverType){
+    /**
+     * @param maneuverType
+     * @return
+     */
+    private Drawable seleccionarIcono(int maneuverType) {
 
         Drawable icono = ContextCompat.getDrawable(getActivity(), R.drawable.ic_continue);
 

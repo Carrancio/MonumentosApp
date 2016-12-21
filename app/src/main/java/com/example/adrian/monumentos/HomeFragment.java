@@ -15,29 +15,58 @@ import android.widget.LinearLayout;
 
 /**
  * Esta clase
+ *
  * @author Adrian Munoz Rojo
  * @author Rafael Matamoros Luque
  * @author David Carrancio Aguado
  */
 public class HomeFragment extends Fragment implements View.OnClickListener {
 
+    /**
+     *
+     */
     private LinearLayout home_container;
+
+    /**
+     *
+     */
     private SoftKeyboard softKeyboard;
 
-    //Variables introducidas (o no) por el usuario
+    /**
+     * Numero máximo de POIs que el usuario quiere
+     */
     private EditText nMaxPOIUsuario;
+
+    /**
+     * Numero de metros a la redonda que el usuario quiere para mostrar POIs
+     */
     private EditText radioUsuario;
 
-    //Almacenamos el tipo de error en el caso de que alguno (o ambos) de los valores introducidos por el usuario no sean válidos
+    /**
+     * Almacenamos el tipo de error en el caso de que alguno (o ambos) de los valores introducidos por el usuario no sean válidos
+     */
     private String tipoError = "";
 
+    /**
+     *
+     */
+    public HomeFragment() {
+    }
 
-    public HomeFragment(){}
-
-
+    /**
+     * @param savedInstanceState
+     */
     @Override
-    public void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState); }
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
+    /**
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -75,7 +104,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         View.OnFocusChangeListener onFocusChangeListener = new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus){
+                if (hasFocus) {
                     //Mostrar el teclado cuando se obtenga el focus
                     softKeyboard.openSoftKeyboard();
                 }
@@ -89,7 +118,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         home_container.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus){
+                if (hasFocus) {
                     //Ocultar el teclado cuando se obtenga el focus
                     softKeyboard.closeSoftKeyboard();
                 }
@@ -109,7 +138,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
      * @param context Context
      */
     @Override
-    public void onAttach(Context context) { super.onAttach(context); }
+    public void onAttach(Context context) {
+        super.onAttach(context);
+    }
 
     /**
      * Called when the fragment is no longer attached to its activity.  This is called after
@@ -118,7 +149,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
      * after {@link #onStop()}.
      */
     @Override
-    public void onDetach() { super.onDetach(); }
+    public void onDetach() {
+        super.onDetach();
+    }
 
     /**
      * Called when a view has been clicked.
@@ -135,7 +168,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         try {
             //Almacenamos el valor introducido por el usuario
             nMaxPOI = Integer.parseInt(nMaxPOIUsuario.getText().toString());
-        } catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             //En caso contrario, asignamos un -1 a la variable
             nMaxPOI = -1;
         }
@@ -143,12 +176,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         try {
             //Almacenamos el valor introducido por el usuario
             radio = Double.valueOf(Double.valueOf(radioUsuario.getText().toString()) * 1000).intValue();
-        } catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             //En caso contrario, asignamos un -1 a la variable
             radio = -1;
         }
 
-        if(validarDatosEntrada(nMaxPOI, radio)) {
+        if (validarDatosEntrada(nMaxPOI, radio)) {
             //Los datos introducidos son válidos (o no se ha introducido nada)
             if (mainActivity.isGPSAndInternetEnabled()) {
                 mainActivity.getNavigationView().getMenu().getItem(2).setChecked(true);
@@ -159,73 +192,72 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                 mainActivity.mostrarInformacion("Mapa");
             }
-        }
-        else{
+        } else {
             mainActivity.showErrorDialog(tipoError);
         }
     }
 
+    /**
+     *
+     */
     @Override
     public void onDestroy() {
         super.onDestroy();
         softKeyboard.unRegisterSoftKeyboardCallback();
     }
 
-    private boolean validarDatosEntrada(int maxPOI, int radio){
+    /**
+     * @param maxPOI
+     * @param radio
+     * @return
+     */
+    private boolean validarDatosEntrada(int maxPOI, int radio) {
 
-        if(maxPOI != -1){
+        if (maxPOI != -1) {
             //Se ha introducido un valor para nMaxPOI
-            if(radio != -1){
+            if (radio != -1) {
                 //Además, se ha introducido un valor para radio
-                if((maxPOI >= 1) && (maxPOI <= 500)) {
+                if ((maxPOI >= 1) && (maxPOI <= 500)) {
                     //nMaxPOI está en rango valido
-                    if((radio >= 10) && (radio <= 10000)){
+                    if ((radio >= 10) && (radio <= 10000)) {
                         //Y radio también está en rango válido
                         return true;
-                    }
-                    else{
+                    } else {
                         tipoError = "RADIO";
                         return false;
                     }
-                }
-                else{
+                } else {
                     //nMaxPOI no está en el rango permitido
-                    if((radio >= 10) && (radio <= 10000)){
+                    if ((radio >= 10) && (radio <= 10000)) {
                         //Pero radio sí lo está
                         tipoError = "MAXPOI";
                         return false;
-                    }
-                    else{
+                    } else {
                         //Ni nMaxPOI ni rango se encuentran en el rango permitido
                         tipoError = "MAXPOIandRADIO";
                         return false;
                     }
                 }
-            }
-            else{
+            } else {
                 //Pero no se ha introducido un valor para radio
-                if((maxPOI >= 1) && (maxPOI <= 500)){
+                if ((maxPOI >= 1) && (maxPOI <= 500)) {
                     return true;
-                }
-                else{
+                } else {
                     tipoError = "MAXPOI";
                     return false;
                 }
             }
-        }
-        else{
+        } else {
             //No se ha introducido un valor para nMaxPOI
-            if(radio != -1){
+            if (radio != -1) {
                 //Pero sí se ha introducido un valor para radio
-                if((radio >= 10) && (radio <= 10000)){
+                if ((radio >= 10) && (radio <= 10000)) {
                     return true;
-                }
-                else{
+                } else {
                     tipoError = "RADIO";
                     return false;
                 }
-            }
-            else{
+            } else {
                 //No se ha introducido ningún valor, por tanto, ambos datos son válidos
                 return true;
             }
