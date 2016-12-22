@@ -54,105 +54,71 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
 
-    /**
-     *
-     */
     private boolean permissionRequestDone = false;
 
-    /**
-     *
-     */
     private DrawerLayout drawerLayout;
-
-    /**
-     *
-     */
     private NavigationView navigationView;
 
-    /**
-     *
-     */
     private String idioma;
 
-    /**
-     *
-     */
     private final String TAG = MainActivity.class.getSimpleName();
 
-    /**
-     *
-     */
     private double latitudGPS;
 
-    /**
-     *
-     */
+
     private double longitudGPS;
 
-    /**
+    /*
      * Radio de búsqueda por defecto que por defecto es 1 km
      */
     private int radio = 1000;
 
 
-    /**
+    /*
      * Número máximo de POIs que por defecto es 30
      */
     private int maxPOI = 30;
 
-    /**
+    /*
      * Radio de búsqueda introducido por el usuario
      */
     private int inputRadioBusqueda = -1;
 
-    /**
+    /*
      * Número máximo de POI introducido por el usuario
      */
     private int inputNMaxPOI = -1;
 
-    /**
+    /*
      *
      */
     private GoogleApiClient mGoogleApiClient;
 
-    /**
+    /*
      * Request code to use when launching the resolution activity
      */
     private static final int REQUEST_RESOLVE_ERROR = 1001;
 
-    /**
+    /*
      * Unique tag for the error dialog fragment
      */
     private static final String DIALOG_ERROR = "dialog_error";
 
-    /**
+    /*
      * Bool to track whether the app is already resolving an error
      */
     private boolean mResolvingError = false;
-
-    /**
-     *
-     */
     private static final String STATE_RESOLVING_ERROR = "resolving_error";
 
-    /**
-     *
-     */
     private static final int REQUEST_LOCATION = 2;
 
-    /**
-     *
-     */
     private static final int LOCATION_INTERVAL = 1000;
 
-    /**
+    /*
      *Dialogo que se muestra mientras se realiza una espera
      */
     private ProgressDialog progressDialog;
 
-    /**
-     *
-     */
     private GlobalState globalState;
 
     /**
@@ -171,9 +137,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (!hasPermission) {
             if (permissionRequestDone)
                 requestPermission();
-
-            //Comprobación de que ya hemos obtenido los permisos antes de continuar
-            hasPermission = hasPermisosUbicacion();
         }
 
         //Obtencion del idioma del telefono
@@ -233,7 +196,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                                     .addToBackStack("HomeFragment")
                                     .commit();
 
-                            getSupportActionBar().setTitle(getResources().getString(R.string.menu_inicio));
+                            if(getSupportActionBar() != null) {
+                                getSupportActionBar().setTitle(getResources().getString(R.string.menu_inicio));
+                            }
                         }
 
                         break;
@@ -245,7 +210,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                             mostrarInformacion("Monumentos");
 
-                            getSupportActionBar().setTitle(R.string.menu_monumentos);
+                            if(getSupportActionBar() != null) {
+                                getSupportActionBar().setTitle(R.string.menu_monumentos);
+                            }
                         }
 
                         break;
@@ -257,7 +224,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                             mostrarInformacion("Mapa");
 
-                            getSupportActionBar().setTitle(getResources().getString(R.string.menu_mapa));
+                            if(getSupportActionBar() != null) {
+                                getSupportActionBar().setTitle(getResources().getString(R.string.menu_mapa));
+                            }
                         }
 
                         break;
@@ -275,7 +244,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                                     .addToBackStack("AboutFragment")
                                     .commit();
 
-                            getSupportActionBar().setTitle(getResources().getString(R.string.menu_sobre_app));
+                            if(getSupportActionBar() != null) {
+                                getSupportActionBar().setTitle(getResources().getString(R.string.menu_sobre_app));
+                            }
                         }
 
                         break;
@@ -291,7 +262,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Toolbar appbar = (Toolbar) findViewById(R.id.appbar);
         setSupportActionBar(appbar);
 
-        getSupportActionBar().setHomeAsUpIndicator(R.mipmap.ic_menu);
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setHomeAsUpIndicator(R.mipmap.ic_menu);
+        }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(R.string.menu_inicio);
     }
@@ -551,7 +524,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-    /**
+    /*
      * Creates a dialog for an error message
      *
      * @param errorCode
@@ -595,7 +568,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-    /**
+    /*
      * Comprobación permisos ubicación (GPS) concedidos
      *
      * @return
@@ -847,7 +820,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-    /**
+    /*
      * Metodo que usamos para mostrar el Mapa en el fragmento si da a la opcion del menu
      */
     private void mostrarMapFragment() {
@@ -868,11 +841,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     .addToBackStack("MapFragment")
                     .commit();
 
-            getSupportActionBar().setTitle(getResources().getString(R.string.menu_mapa));
+            if(getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(getResources().getString(R.string.menu_mapa));
+            }
         }
     }
 
-    /**
+    /*
      *
      */
     private void mostrarPOIListFragment() {
@@ -888,11 +863,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     .addToBackStack("POIListFragment")
                     .commit();
 
-            getSupportActionBar().setTitle(R.string.menu_monumentos);
+            if(getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(R.string.menu_monumentos);
+            }
         }
     }
 
-    /**
+    /*
      * Metodo que comprueba si se obtienen las coordenadas GPS
      * Si no las obtiene, se pondrán las de Valladolid por defecto
      */
@@ -990,8 +967,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     public void marcarPrevItem() {
 
-        String navigationTitle = getSupportActionBar().getTitle().toString();
+        String navigationTitle = "";
 
+        if(getSupportActionBar() != null) {
+            navigationTitle = (String) getSupportActionBar().getTitle();
+        }
+
+        //noinspection ConstantConditions
         if (navigationTitle.equals(getResources().getString(R.string.menu_inicio)))
             navigationView.getMenu().getItem(0).setChecked(true);
         else if (navigationTitle.equals(getResources().getString(R.string.menu_monumentos)))
@@ -1015,14 +997,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             Fragment fragment = getFragmentManager().findFragmentById(R.id.content_frame);
 
-            if (fragment instanceof HomeFragment)
-                getSupportActionBar().setTitle(getResources().getString(R.string.menu_inicio));
-            else if (fragment instanceof MapFragment)
-                getSupportActionBar().setTitle(getResources().getString(R.string.menu_mapa));
-            else if (fragment instanceof POIListFragment)
-                getSupportActionBar().setTitle(R.string.menu_monumentos);
-            else if (fragment instanceof AboutFragment)
-                getSupportActionBar().setTitle(getResources().getString(R.string.menu_sobre_app));
+            if(getSupportActionBar() != null) {
+                if (fragment instanceof HomeFragment)
+                    getSupportActionBar().setTitle(getResources().getString(R.string.menu_inicio));
+                else if (fragment instanceof MapFragment)
+                    getSupportActionBar().setTitle(getResources().getString(R.string.menu_mapa));
+                else if (fragment instanceof POIListFragment)
+                    getSupportActionBar().setTitle(R.string.menu_monumentos);
+                else if (fragment instanceof AboutFragment)
+                    getSupportActionBar().setTitle(getResources().getString(R.string.menu_sobre_app));
+            }
 
             marcarPrevItem();
         }

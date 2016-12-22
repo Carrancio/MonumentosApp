@@ -16,7 +16,6 @@
 
 
     <application
-
         android:allowBackup="true"
         android:fullBackupContent="true"
         android:icon="@mipmap/ic_app"
@@ -31,6 +30,24 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!--Intent-filter añadido para incorporar los "deep link" de Google a la aplicación.
+            Para más información: https://developer.android.com/training/app-indexing/deep-linking.html-->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Accepts URIs that begin with "http://www.asimov.com/tripapp” -->
+                <data android:scheme="http"
+                    android:host="www.asimov.com"
+                    android:pathPrefix="/tripapp" />
+
+                <!-- note that the leading "/" is required for pathPrefix-->
+                <!-- Accepts URIs that begin with "asimov://tripapp” -->
+                <data android:scheme="asimov"
+                    android:host="tripapp" />
             </intent-filter>
         </activity>
     </application>

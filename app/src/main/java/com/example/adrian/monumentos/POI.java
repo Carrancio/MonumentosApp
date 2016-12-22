@@ -1,8 +1,5 @@
 package com.example.adrian.monumentos;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 /**
  * Esta clase sirve para obtener datos de cada POI
  *
@@ -10,37 +7,37 @@ import android.os.Parcelable;
  * @author Rafael Matamoros Luque
  * @author David Carrancio Aguado
  */
-public class POI implements Parcelable {
+class POI {
 
     /**
      * Nombre del POi
      */
-    private String nombre;
+    private final String nombre;
 
     /**
      * Descripcion del POI
      */
-    private String descripcion;
+    private final String descripcion;
 
     /**
      * Latitud del POI
      */
-    private double latitud;
+    private final double latitud;
 
     /**
      * Longitud del POI
      */
-    private double longitud;
+    private final double longitud;
 
     /**
      *
      */
-    private String url_imagen;
+    private final String url_imagen;
 
     /**
      *
      */
-    private String enlace;
+    private final String enlace;
 
     /**
      * Constructor publico
@@ -52,7 +49,7 @@ public class POI implements Parcelable {
      * @param url_imagen  de cada punto de interes
      * @param enlace      de cada punto de interes
      */
-    public POI(String nombre, String descripcion, double latitud, double longitud, String url_imagen, String enlace) {
+    POI(String nombre, String descripcion, double latitud, double longitud, String url_imagen, String enlace) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.latitud = latitud;
@@ -66,17 +63,8 @@ public class POI implements Parcelable {
      *
      * @return El nombre del POI
      */
-    public String getNombre() {
+    String getNombre() {
         return nombre;
-    }
-
-    /**
-     * Permite modificar el nombre del POI
-     *
-     * @param nombre
-     */
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
     }
 
     /**
@@ -84,17 +72,8 @@ public class POI implements Parcelable {
      *
      * @return La descripcion del POI
      */
-    public String getDescripcion() {
+    String getDescripcion() {
         return descripcion;
-    }
-
-    /**
-     * Permite modificar la descripcion del POI
-     *
-     * @param descripcion
-     */
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
     }
 
     /**
@@ -102,17 +81,8 @@ public class POI implements Parcelable {
      *
      * @return La latidud del POI
      */
-    public double getLatitud() {
+    double getLatitud() {
         return latitud;
-    }
-
-    /**
-     * Permite modificar la latitud del POI
-     *
-     * @param latitud
-     */
-    public void setLatitud(double latitud) {
-        this.latitud = latitud;
     }
 
     /**
@@ -120,17 +90,8 @@ public class POI implements Parcelable {
      *
      * @return La longitud del POI
      */
-    public double getLongitud() {
+    double getLongitud() {
         return longitud;
-    }
-
-    /**
-     * Permite modificar la longitud del POI
-     *
-     * @param longitud
-     */
-    public void setLongitud(double longitud) {
-        this.longitud = longitud;
     }
 
     /**
@@ -138,17 +99,8 @@ public class POI implements Parcelable {
      *
      * @return La imagen del POI
      */
-    public String getUrl_imagen() {
+    String getUrl_imagen() {
         return url_imagen;
-    }
-
-    /**
-     * Permite modificar la imagen del POI
-     *
-     * @param url_imagen
-     */
-    public void setUrl_imagen(String url_imagen) {
-        this.url_imagen = url_imagen;
     }
 
     /**
@@ -156,64 +108,7 @@ public class POI implements Parcelable {
      *
      * @return El enlace del POI
      */
-    public String getEnlace() {
+    String getEnlace() {
         return enlace;
     }
-
-    /**
-     * Permite modificar el enlace del POI
-     *
-     * @param enlace
-     */
-    public void setEnlace(String enlace) {
-        this.enlace = enlace;
-    }
-
-    /**
-     * Seccion Parcelable
-     *
-     * @param in
-     */
-    private POI(Parcel in) {
-        String[] datos = new String[6];
-
-        in.readStringArray(datos);
-        this.nombre = datos[0];
-        this.descripcion = datos[1];
-        this.latitud = Double.parseDouble(datos[2]);
-        this.longitud = Double.parseDouble(datos[3]);
-        this.url_imagen = datos[4];
-        this.enlace = datos[5];
-    }
-
-    /**
-     * @return
-     */
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    /**
-     * @param parcel
-     * @param i
-     */
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeStringArray(new String[]{this.nombre,
-                this.descripcion, String.valueOf(this.latitud), String.valueOf(this.longitud), this.url_imagen, this.enlace});
-    }
-
-    /**
-     *
-     */
-    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
-        public POI createFromParcel(Parcel in) {
-            return new POI(in);
-        }
-
-        public POI[] newArray(int size) {
-            return new POI[size];
-        }
-    };
 }

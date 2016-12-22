@@ -1,13 +1,14 @@
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="IconColors">
 
     <ImageView
         android:contentDescription="@string/descripcion"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:src="@drawable/prueba"
+        android:src="@drawable/navigation_view_image"
         android:scaleType="centerCrop" />
 
 </FrameLayout>

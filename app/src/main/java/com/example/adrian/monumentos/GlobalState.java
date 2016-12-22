@@ -1,12 +1,14 @@
 package com.example.adrian.monumentos;
 
 import android.support.multidex.MultiDexApplication;
+
 import java.util.ArrayList;
 
 /**
  * Clase que se utilizará para almacenar la información global a toda la Aplicación.
  * En este caso, el ArrayList de POIs a mostrar
  */
+@SuppressWarnings("ALL")
 public class GlobalState extends MultiDexApplication {
 
     /**

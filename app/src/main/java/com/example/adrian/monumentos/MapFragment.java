@@ -2,7 +2,6 @@ package com.example.adrian.monumentos;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -93,11 +92,6 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
     private int indiceRestaurar = -1;
 
     /**
-     *
-     */
-    private Bundle fragmentToRestore = new Bundle();
-
-    /**
      * Constructor por defecto
      */
     public MapFragment() {
@@ -143,7 +137,8 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
         mapView.setMultiTouchControls(true);
         mapView.setTilesScaledToDpi(true);
 
-    //Dependiendo desde donde reciba
+        //Dependiendo desde donde reciba
+        //noinspection ConstantConditions
         if ((params.getString("Origen").equals("POIListAdapter")) || (params.getString("Origen").equals("MapFragment")))
             mostrarMapaPOI();
         else
@@ -333,28 +328,6 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
     }
 
     /**
-     * Called when a fragment is first attached to its context.
-     * {@link #onCreate(Bundle)} will be called after this.
-     *
-     * @param context Context
-     */
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
-
-    /**
-     * Called when the fragment is no longer attached to its activity.  This is called after
-     * {@link #onDestroy()}, except in the cases where the fragment instance is retained across
-     * Activity re-creation (see {@link #setRetainInstance(boolean)}), in which case it is called
-     * after {@link #onStop()}.
-     */
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
-
-    /**
      *
      */
     @Override
@@ -408,7 +381,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver, Marker.O
                 }
             }
 
-        ViewTreeObserver viewTreeObserver = getView().getViewTreeObserver();
+        @SuppressWarnings("ConstantConditions") ViewTreeObserver viewTreeObserver = getView().getViewTreeObserver();
 
         if (isAnyInfoWindowOpen) {
             //Comprobamos si ha cambiado la orientación de la pantalla

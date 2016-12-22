@@ -2,7 +2,6 @@ package com.example.adrian.monumentos;
 
 import android.annotation.SuppressLint;
 import android.app.Fragment;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -26,14 +25,6 @@ public class WikiFragment extends Fragment {
      * Constructor por defecto
      */
     public WikiFragment() {
-    }
-
-    /**
-     * @param savedInstanceState
-     */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
     }
 
     /**
@@ -63,19 +54,4 @@ public class WikiFragment extends Fragment {
         return vista;
     }
 
-    /**
-     * @param context
-     */
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
-
-    /**
-     *
-     */
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
 }

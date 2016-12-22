@@ -19,12 +19,6 @@ public class AboutFragment extends Fragment {
     }
 
     /**
-     * Metodo onCreate
-     * @param savedInstanceState
-     */
-    public void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState); }
-
-    /**
      * Inflamos el fragmento con su layout
      * @param inflater
      * @param container

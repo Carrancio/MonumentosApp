@@ -1,5 +1,6 @@
 package com.example.adrian.monumentos;
 
+import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
@@ -14,6 +15,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Clase utilizada para manejar los eventos de mostrar/ocultar el teclado en los EditText de home_fragment.xml
  */
+@SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+@SuppressLint("ALL")
 class SoftKeyboard implements View.OnFocusChangeListener {
 
     /**
@@ -115,6 +118,7 @@ class SoftKeyboard implements View.OnFocusChangeListener {
     /**
      *
      */
+    @SuppressWarnings("EmptyMethod")
     interface SoftKeyboardChanged {
         void onSoftKeyboardHide();
 

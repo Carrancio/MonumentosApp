@@ -2,7 +2,6 @@ package com.example.adrian.monumentos;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -51,14 +50,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
      *
      */
     public HomeFragment() {
-    }
-
-    /**
-     * @param savedInstanceState
-     */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
     }
 
     /**
@@ -129,28 +120,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         ubicacion.setOnClickListener(this);
 
         return vista;
-    }
-
-    /**
-     * Called when a fragment is first attached to its context.
-     * {@link #onCreate(Bundle)} will be called after this.
-     *
-     * @param context Context
-     */
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
-
-    /**
-     * Called when the fragment is no longer attached to its activity.  This is called after
-     * {@link #onDestroy()}, except in the cases where the fragment instance is retained across
-     * Activity re-creation (see {@link #setRetainInstance(boolean)}), in which case it is called
-     * after {@link #onStop()}.
-     */
-    @Override
-    public void onDetach() {
-        super.onDetach();
     }
 
     /**

@@ -9,7 +9,7 @@
     <string name="leer_mas_boton">Read in Wikipedia</string>
     <string name="aceptar_boton">Accept</string>
     <string name="imagen_poi">POI image</string>
-    <string name="buscar_monumentos_boton">Find POIs near my</string>
+    <string name="buscar_monumentos_boton">Find near my position</string>
     <string name="logo">Logo</string>
     <string name="titulo">Tittle</string>
     <string name="descripcion">Description</string>
