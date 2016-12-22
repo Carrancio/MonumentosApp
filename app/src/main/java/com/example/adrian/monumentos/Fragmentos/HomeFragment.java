@@ -222,17 +222,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         softKeyboard.unRegisterSoftKeyboardCallback();
     }
 
-    /*
+
+
+    /**
      * Método encargado de validar que los datos introducidos por el usuario (si es que ha introducido alguno)
      * son válidos.
-     *
-     * El parámetro "maxPOI" debe estar entre 1 y 500, no se permite un valor más alto del mismo a la hora de hacer
+     * @param maxPOI debe estar entre 1 y 500, no se permite un valor más alto del mismo a la hora de hacer
      * consultas a la API de la WikiPedia, por lo que no se admitirán ningún valor fuera de ese rango.
-     *
-     * El parámetro "radio" debe estar entre 10 y 10000 (medida en metros) por el mismo motivo que el anterior parámetro. Este
-     * valor es recogido en kilómetros del usuario y pasado a metros antes de ser enviado a este método.
-     *
-     * El resultado de la ejecución del mismo es un boolean de valor "true", si y sólo si, todos los parámetros introducidos por
+     * @param radio debe estar entre 10 y 10000 (medida en metros) por el mismo motivo que el anterior parámetro. Este
+     * valor es recogido en kilómetros del usuario y pasado a metros antes de ser enviado a este método
+     * @return El resultado de la ejecución del mismo es un boolean de valor "true", si y sólo si, todos los parámetros introducidos por
      * el usuario están en el rango correcto (o no se ha introducido ninguno de los dos). En caso de que alguno (o todos)
      * los parámetros introducidos por el usuario no estén en el rango permitido, se devolverá "false" indicando
      * cuál es el error en la variable "tipoError".

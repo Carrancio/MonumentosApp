@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * @author David Carrancio Aguado
  * @version 1.0
  */
-@SuppressWarnings("ALL")
+
 public class GlobalState extends MultiDexApplication {
 
     //ArrayList donde se almacenan los POIs obtenidos en MainActivity
