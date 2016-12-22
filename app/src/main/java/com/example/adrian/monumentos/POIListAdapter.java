@@ -22,40 +22,26 @@ import java.util.ArrayList;
 /**
  * Esta clase sirve para obtener datos de cada POI
  *
- * @author Adrian Munoz Rojo
+ * @author Adrián Muñoz Rojo
  * @author Rafael Matamoros Luque
  * @author David Carrancio Aguado
+ * @see MapFragment
+ * @see POIListFragment
+ * @see WikiFragment
+ * @version 1.0
  */
 public class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHolder> {
 
-    /**
-     *
-     */
     private final ArrayList<POI> poiList;
 
-    /**
-     *
-     */
     private final Context context;
 
-    /**
-     *
-     */
     private final POIListFragment poiListFragment;
 
-    /**
-     *
-     */
     public final static String POI_URL = "POI_URL";
 
-    /**
-     *
-     */
     private final static String POI_NOMBRE = "POI_NOMBRE";
 
-    /**
-     *
-     */
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         //Elementos de una CardView
@@ -76,8 +62,10 @@ public class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHold
     }
 
     /**
-     * @param context
-     * @param poiListFragment
+     * Constructor del Adaptador para el RecyclerView
+     *
+     * @param context Contexto sobre el que se aplica
+     * @param poiListFragment Referencia al Fragmento de la lista de POIs
      */
     public POIListAdapter(Context context, POIListFragment poiListFragment) {
         this.context = context;
@@ -89,13 +77,11 @@ public class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHold
     /**
      * Crea una nueva vista (invocado por el LayoutManager)
      *
-     * @param parent
-     * @param viewType
-     * @return
+     * @param parent The ViewGroup into which the new View will be added after it is bound to an adapter position.
+     * @param viewType The view type of the new View.
      */
     @Override
-    public POIListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                        int viewType) {
+    public POIListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View vista = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.poi_miniatura, parent, false);
@@ -104,8 +90,11 @@ public class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHold
     }
 
     /**
-     * @param holder
-     * @param position
+     * Called by RecyclerView to display the data at the specified position.
+     * This method should update the contents of the itemView to reflect the item at the given position.
+     *
+     * @param holder The ViewHolder which should be updated to represent the contents of the item at the given position in the data set.
+     * @param position The position of the item within the adapter's data set.
      */
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
@@ -184,7 +173,9 @@ public class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHold
     }
 
     /**
-     * @return
+     * Returns the total number of items in the data set held by the adapter.
+     *
+     * @return The total number of items in this adapter.
      */
     @Override
     public int getItemCount() {

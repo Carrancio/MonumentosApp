@@ -27,16 +27,28 @@ import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
  */
 public class InfoBubble extends MarkerInfoWindow {
 
-    private POI poi;
+    //Variables empleadas para pasar los datos en un objeto Bundle
     private final static String POI_NOMBRE = "POI_NOMBRE";
     private final static String POI_URL = "POI_URL";
+
+    //El objeto POI en cuestión
+    private POI poi;
+
+    /*
+    * Esta variable indica si se debe mostrar el icono de la ruta en la burbuja o no.
+    * En función de si la burbuja se abre en un MapFragment con un solo POI o en un MapFragment
+    * que muestre todos los POIs junto con la ubicación del usuario
+    */
     private final boolean mostrarIconoUbicacion;
 
     /**
-     * Metodo que crea la burbuja
-     * @param mapView
-     * @param mapFragment
-     * @param mostrarIconoUbicacion
+     * Método que se encarga de crear la burbuja y mostrar dos botones. Uno que crearía otro MapFragment con la ubicación
+     * del usuario, la del POI en concreto y la ruta entre ambos, y otro que crearía un WikiFragment y te llevaría a la URL
+     * del enlace a la WikiPedia del POI.
+     *
+     * @param mapView MapView sobre el que se va a aplicar
+     * @param mapFragment Fragmento en el que se encuentra el Marker que ha sido clickado
+     * @param mostrarIconoUbicacion Determina si se debe mostrar el icono para mostrar las rutas o no en esa burbuja
      */
     public InfoBubble(MapView mapView, final MapFragment mapFragment, boolean mostrarIconoUbicacion) {
         super(R.layout.info_bubble, mapView);
@@ -87,7 +99,11 @@ public class InfoBubble extends MarkerInfoWindow {
     }
 
     /**
-     * @param item
+     * Este método se encarga de, primero, cerrar el resto de InfoWindow que pueda haber abiertas. Después,
+     * activa la visibilidad de los botones que sean necesarios, y, por último, intenta incorporar la imagen del POI
+     * que se tiene guardada, o en su ausencia, pone la imagen de la aplicación por defecto.
+     *
+     * @param item Item asociado al InfoBubble. En este caso el Marker al ser clickado
      */
     @Override
     public void onOpen(Object item) {

@@ -1,53 +1,43 @@
 package com.example.adrian.monumentos;
 
 /**
- * Esta clase sirve para obtener datos de cada POI
+ * Esta clase representa a los Puntos de Interés (POI de sus siglas en inglés) que la aplicación utiliza durante toda su
+ * ejecución. Además de su creación, esta clase sólo posee métodos "get" para acceder a sus campos.
  *
- * @author Adrian Munoz Rojo
+ * @author Adrián Muñoz Rojo
  * @author Rafael Matamoros Luque
  * @author David Carrancio Aguado
+ * @version 1.0
  */
 public class POI {
 
-    /**
-     * Nombre del POi
-     */
+    //Nombre del POI
     private final String nombre;
 
-    /**
-     * Descripcion del POI
-     */
+    //Descripcion del POI
     private final String descripcion;
 
-    /**
-     * Latitud del POI
-     */
+    //Latitud del POI
     private final double latitud;
 
-    /**
-     * Longitud del POI
-     */
+    //Longitud del POI
     private final double longitud;
 
-    /**
-     *
-     */
+    //URL de la imagen del POI que almacena la WikiPedia
     private final String url_imagen;
 
-    /**
-     *
-     */
+    //Enlace al artículo de la versión móvil de la WikiPedia referente al POI
     private final String enlace;
 
     /**
-     * Constructor publico
+     * Constructor publico del POI
      *
-     * @param nombre      de cada punto de interes
-     * @param descripcion de cada punto de interes
-     * @param latitud     de cada punto de interes
-     * @param longitud    de cada punto de interes
-     * @param url_imagen  de cada punto de interes
-     * @param enlace      de cada punto de interes
+     * @param nombre      Nombre del POI
+     * @param descripcion Descripción del POI
+     * @param latitud     Latitud del POI
+     * @param longitud    Longitud del POI
+     * @param url_imagen  URL de la imagen del POI
+     * @param enlace      Enlace del POI
      */
     POI(String nombre, String descripcion, double latitud, double longitud, String url_imagen, String enlace) {
         this.nombre = nombre;
@@ -61,7 +51,7 @@ public class POI {
     /**
      * Obtiene el nombre del POI
      *
-     * @return El nombre del POI
+     * @return nombre
      */
     public String getNombre() {
         return nombre;
@@ -70,7 +60,7 @@ public class POI {
     /**
      * Obtiene la descripción del POI
      *
-     * @return La descripcion del POI
+     * @return descripcion
      */
     public String getDescripcion() {
         return descripcion;
@@ -79,7 +69,7 @@ public class POI {
     /**
      * Obtiene la latitud del POI
      *
-     * @return La latidud del POI
+     * @return latitud
      */
     public double getLatitud() {
         return latitud;
@@ -88,7 +78,7 @@ public class POI {
     /**
      * Obtiene la longitud del POI
      *
-     * @return La longitud del POI
+     * @return longitud
      */
     public double getLongitud() {
         return longitud;
@@ -97,18 +87,16 @@ public class POI {
     /**
      * Obtiene la imagen del POI
      *
-     * @return La imagen del POI
+     * @return url_imagen
      */
-    public String getUrl_imagen() {
+    String getUrl_imagen() {
         return url_imagen;
     }
 
     /**
      * Obtiene el enlace del POI
      *
-     * @return El enlace del POI
+     * @return enlace
      */
-    public String getEnlace() {
-        return enlace;
-    }
+    String getEnlace() { return enlace; }
 }

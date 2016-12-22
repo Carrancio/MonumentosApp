@@ -50,11 +50,23 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 /**
- * Esta es la clase principal.
+ * Esta es la clase principal de la aplicación. Se encarga de obtener, en primera instancia, las coordenadas del GPS del usuario,
+ * para, una vez se quiera obtener la lista de POIs o el mapa mostrando los mismos, se disparen una serie de consultas a la API de
+ * la WikiPedia para obtener esos datos.
  *
- * @author Adrian Munoz Rojo
+ * <p>Se encarga también de gestionar que al usuario se le pidan permisos para utilizar su ubicación, así como de evitar que se
+ * utilice la aplicación sin tener una conexión a Internet o sin tener el GPS activado, mostrando un AlertDialog con el error
+ * en ese caso.</p>
+ *
+ * @author Adrián Muñoz Rojo
  * @author Rafael Matamoros Luque
  * @author David Carrancio Aguado
+ * @see AboutFragment
+ * @see HomeFragment
+ * @see MapFragment
+ * @see POIListFragment
+ * @see HttpHandler
+ * @version 1.0
  */
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
@@ -68,35 +80,23 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     private final String TAG = MainActivity.class.getSimpleName();
 
+    //Coordenadas GPS del usuario
     private double latitudGPS;
-
-
     private double longitudGPS;
 
-    /*
-     * Radio de búsqueda por defecto que por defecto es 1 km
-     */
+    //Radio de búsqueda de POIs (por defecto 1 km)
     private int radio = 1000;
 
-
-    /*
-     * Número máximo de POIs que por defecto es 30
-     */
+    //Número máximo de búsqueda de POIs (por defecto 30)
     private int maxPOI = 30;
 
-    /*
-     * Radio de búsqueda introducido por el usuario
-     */
+    //Radio de búsqueda introducido por el usuario (por defecto -1)
     private int inputRadioBusqueda = -1;
 
-    /*
-     * Número máximo de POI introducido por el usuario
-     */
+    //Número máximo de POIs introducido por el usuario (por defecto -1)
     private int inputNMaxPOI = -1;
 
-    /*
-     *
-     */
+
     private GoogleApiClient mGoogleApiClient;
 
     /*
@@ -116,20 +116,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private static final String STATE_RESOLVING_ERROR = "resolving_error";
 
     private static final int REQUEST_LOCATION = 2;
-
     private static final int LOCATION_INTERVAL = 1000;
 
-    /*
-     *Dialogo que se muestra mientras se realiza una espera
-     */
+    //Dialogo que se muestra mientras se obtienen los datos de los POIs
     private ProgressDialog progressDialog;
 
     private GlobalState globalState;
 
     /**
-     * Creacion de  la vista
+     * Called when the activity is starting
      *
-     * @param savedInstanceState Bundle
+     * @param savedInstanceState  If the activity is being re-initialized after previously
+     *                            being shut down then this Bundle contains the data it most recently
+     *                            supplied in onSaveInstanceState(Bundle). Otherwise it is null.
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -263,7 +262,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         });
 
         //Toolbar
-
         Toolbar appbar = (Toolbar) findViewById(R.id.appbar);
         setSupportActionBar(appbar);
 
@@ -274,8 +272,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         getSupportActionBar().setTitle(R.string.menu_inicio);
     }
 
-    /**
-     *Metodo que crea hilo para mostrar un mapa, monumentos..
+    /*
+     * Clase encargada de obtener la información en relación a los POIs.
+     *
+     * Se encarga de realizar una serie de consultas a la API de la WikiPedia para obtener esta información.
      */
     private class GETPOIs extends AsyncTask<Void, Void, Void> {
 
@@ -414,6 +414,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
+    /**
+     * Called when you are no longer visible to the user.
+     */
     @Override
     protected void onStop() {
         // solo se para si se conecta
@@ -423,6 +426,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         super.onStop();
     }
 
+    /**
+     * After calling connect(), this method will be invoked asynchronously when the connect request has successfully completed.
+     *
+     * @param bundle Bundle of data provided to clients by Google Play services. May be null if no content is provided by the service.
+     */
     @Override
     public void onConnected(@Nullable Bundle bundle) {
 
@@ -463,6 +471,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
+    /**
+     * Callback for the result from requesting permissions.
+     *
+     * @param requestCode The request code passed in requestPermissions(android.app.Activity, String[], int)
+     * @param permissions The requested permissions. Never null.
+     * @param grantResults The grant results for the corresponding permissions which is either PERMISSION_GRANTED or PERMISSION_DENIED. Never null.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_LOCATION) {
@@ -487,6 +502,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         permissionRequestDone = true;
     }
 
+    /**
+     * Called when an activity you launched exits, giving you the requestCode you started it with, the resultCode it returned, and any additional data from it.
+     *
+     * @param requestCode The integer request code originally supplied to startActivityForResult(), allowing you to identify who this result came from.
+     * @param resultCode The integer result code returned by the child activity through its setResult().
+     * @param data  An Intent, which can return result data to the caller (various data can be attached to Intent "extras").
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_RESOLVE_ERROR) {
@@ -501,6 +523,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
+    /**
+     * Provides callbacks that are called when the client is connected or disconnected from the service.
+     *
+     * @param i The reason for the disconnection. Defined by constants CAUSE_*.
+     */
     @Override
     public void onConnectionSuspended(int i) {
         if (i == CAUSE_SERVICE_DISCONNECTED) {
@@ -510,6 +537,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
+    /**
+     * Called when there was an error connecting the client to the service.
+     *
+     * @param connectionResult A ConnectionResult that can be used for resolving the error, and deciding what sort of error occurred.
+     */
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         if (!mResolvingError) {
@@ -529,11 +561,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-    /*
-     * Creates a dialog for an error message
-     *
-     * @param errorCode
-     */
+    //Creates a dialog for an error message
     private void showErrorDialog(int errorCode) {
         // Create a fragment for the error dialog
         MainActivity.ErrorDialogFragment dialogFragment = new MainActivity.ErrorDialogFragment();
@@ -544,16 +572,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         dialogFragment.show(getSupportFragmentManager(), "errordialog");
     }
 
-    /**
-     * Called from ErrorDialogFragment when the dialog is dismissed.
-     */
+    //Called from ErrorDialogFragment when the dialog is dismissed.
     private void onDialogDismissed() {
         mResolvingError = false;
     }
 
-    /**
-     * A fragment to display an error dialog
-     */
+    //A fragment to display an error dialog
     public static class ErrorDialogFragment extends DialogFragment {
         public ErrorDialogFragment() {
         }
@@ -573,11 +597,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-    /*
-     * Comprobación permisos ubicación (GPS) concedidos
-     *
-     * @return
-     */
+    //Comprobación permisos ubicación (GPS) concedidos
     private boolean hasPermisosUbicacion() {
 
         return ActivityCompat.checkSelfPermission(this,
@@ -585,9 +605,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     }
 
-    /**
-     * Solicitar permisos de ubicación al usuario
-     */
+    //Solicitar permisos de ubicación al usuario
     private void requestPermission() {
 
         // Check Permissions Now
@@ -596,9 +614,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 REQUEST_LOCATION);
     }
 
-    /**
-     * Método encargado de comprobar si se han obtenido ya las coordenadas GPS y, en caso contrario, obtenerlas
-     */
+    //Método encargado de comprobar si se han obtenido ya las coordenadas GPS y, en caso contrario, obtenerlas
     private void obtenerCoordenadasGPS() {
         mGoogleApiClient.reconnect();
     }
@@ -606,7 +622,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     /**
      * Método que obtiene los datos necesarios para MapFragment
      *
-     * @return
+     * @return Bundle con la información de la ubicación
      */
     public Bundle obtenerArgumentos() {
 
@@ -620,8 +636,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     /**
-     * @param outState
-     * @param outPersistentState
+     * Called to retrieve per-instance state from an activity before being killed
+     *
+     * @param outState Bundle in which to place your saved state.
+     * @param outPersistentState Bundle in which to place your saved state.
      */
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
@@ -630,7 +648,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     /**
-     * @param location
+     * Called when the location has changed.
+     *
+     * @param location The new location, as a Location object.
      */
     @Override
     public void onLocationChanged(Location location) {
@@ -645,8 +665,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     /**
-     * @param item
-     * @return
+     * This hook is called whenever an item in your options menu is selected.
+     *
+     * @param item The menu item that was selected.
+     * @return Return false to allow normal menu processing to proceed, true to consume it here.
      */
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -675,10 +697,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     /**
-     * Menu a la izquierda
+     * Prepare the Screen's standard options menu to be displayed
      *
-     * @param menu
-     * @return menu a la izquierda
+     * @param menu The options menu as last shown or first initialized by onCreateOptionsMenu().
+     * @return  true for the menu to be displayed; if you return false it will not be shown.
      */
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -687,9 +709,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     /**
-     * Comprueba si se ha introducido bien los datos del numero de POIs y el radio
+     * Método encargado de comprobar los datos que se han introducido (si se han introducido),
+     * verificar que los datos son nuevos a los que se tenían antes, y, si es necesario, mostrarlos
+     * o simplemente obtener nuevos datos sin mostrarlos.
      *
-     * @param tipoInfo
+     * @param tipoInfo String que indica si se debe mostrar información del Mapa o de Monumentos
      */
     public void mostrarInformacion(String tipoInfo) {
 
@@ -800,9 +824,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-    /**
-     * @return
-     */
     private int usuarioHaIntroducidoInformacion() {
         if (inputNMaxPOI != -1) {
             //El usuario ha introducido un valor para "nMaxPOI"
@@ -825,9 +846,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-    /*
-     * Metodo que usamos para mostrar el Mapa en el fragmento si da a la opcion del menu
-     */
+    //Metodo empleado para mostrar el Mapa en el fragmento
     private void mostrarMapFragment() {
         //Obtenemos una referencia al fragmento que está activo actualmente
         Fragment fragment = getFragmentManager().findFragmentById(R.id.content_frame);
@@ -852,9 +871,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-    /*
-     *
-     */
+    //Metodo empleado para mostrar la lista de Monumentos en el fragmento
     private void mostrarPOIListFragment() {
         //Obtenemos una referencia al fragmento que está activo actualmente
         Fragment fragment = getFragmentManager().findFragmentById(R.id.content_frame);
@@ -877,6 +894,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     /*
      * Metodo que comprueba si se obtienen las coordenadas GPS
      * Si no las obtiene, se pondrán las de Valladolid por defecto
+     *
      */
     private void comprobarObtencionCoordenadas() {
         //Primera comprobación de que se han obtenido las coordenadas del GPS
@@ -932,28 +950,26 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     /**
-     * @return
+     * @return NavigationView
      */
     public NavigationView getNavigationView() {
         return navigationView;
     }
 
     /**
-     * @param inputRadioBusqueda
+     * @param inputRadioBusqueda Radio de búsqueda introducido por el usuario
      */
-    public void setInputRadioBusqueda(int inputRadioBusqueda) {
-        this.inputRadioBusqueda = inputRadioBusqueda;
-    }
+    public void setInputRadioBusqueda(int inputRadioBusqueda) { this.inputRadioBusqueda = inputRadioBusqueda; }
 
     /**
-     * @param inputNMaxPOI
+     * @param inputNMaxPOI Número máximo de POIs introducido por el usuario
      */
     public void setInputNMaxPOI(int inputNMaxPOI) {
         this.inputNMaxPOI = inputNMaxPOI;
     }
 
     /**
-     * @param tipoError
+     * @param tipoError String que indica el tipo de error a mostrar en el AlertDialog
      */
     public void showErrorDialog(String tipoError) {
 
@@ -968,7 +984,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     /**
-     *
+     * Método que se encarga de mostrar en el menú lateral el elemento del que se procede cuando al intentar
+     * avanzar por la aplicación, ocurre un error y no se ha podido avanzar al siguiente punto.
      */
     public void marcarPrevItem() {
 
@@ -990,8 +1007,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     /**
-     * Take care of popping the fragment back stack or finishing the activity
-     * as appropriate.
+     * Called when the activity has detected the user's press of the back key.
      */
     @Override
     public void onBackPressed() {
