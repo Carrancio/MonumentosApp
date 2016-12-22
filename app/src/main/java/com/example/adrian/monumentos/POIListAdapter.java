@@ -12,6 +12,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.adrian.monumentos.Fragmentos.MapFragment;
+import com.example.adrian.monumentos.Fragmentos.POIListFragment;
+import com.example.adrian.monumentos.Fragmentos.WikiFragment;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -23,7 +26,7 @@ import java.util.ArrayList;
  * @author Rafael Matamoros Luque
  * @author David Carrancio Aguado
  */
-class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHolder> {
+public class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHolder> {
 
     /**
      *
@@ -43,7 +46,7 @@ class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHolder> {
     /**
      *
      */
-    final static String POI_URL = "POI_URL";
+    public final static String POI_URL = "POI_URL";
 
     /**
      *
@@ -76,7 +79,7 @@ class POIListAdapter extends RecyclerView.Adapter<POIListAdapter.ViewHolder> {
      * @param context
      * @param poiListFragment
      */
-    POIListAdapter(Context context, POIListFragment poiListFragment) {
+    public POIListAdapter(Context context, POIListFragment poiListFragment) {
         this.context = context;
         this.poiListFragment = poiListFragment;
         GlobalState globalState = (GlobalState) context.getApplicationContext();

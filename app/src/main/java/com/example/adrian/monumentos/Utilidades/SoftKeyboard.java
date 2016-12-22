@@ -1,4 +1,4 @@
-package com.example.adrian.monumentos;
+package com.example.adrian.monumentos.Utilidades;
 
 import android.annotation.SuppressLint;
 import android.os.Handler;
@@ -13,62 +13,26 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Clase utilizada para manejar los eventos de mostrar/ocultar el teclado en los EditText de home_fragment.xml
+ * Clase no desarrollada por nosotros, incluída en la aplicación para gestionar los eventos de aparición y desaparición
+ * del teclado en HomeFragment de cara a manejar los EditText con la información que introduce el usuario.
  */
 @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
 @SuppressLint("ALL")
-class SoftKeyboard implements View.OnFocusChangeListener {
+public class SoftKeyboard implements View.OnFocusChangeListener {
 
-    /**
-     *
-     */
     private static final int CLEAR_FOCUS = 0;
 
-    /**
-     *
-     */
     private final ViewGroup layout;
-
-    /**
-     *
-     */
     private int layoutBottom;
-
-    /**
-     *
-     */
     private final InputMethodManager im;
-
-    /**
-     *
-     */
     private final int[] coords;
-
-    /**
-     *
-     */
     private boolean isKeyboardShow;
-
-    /**
-     *
-     */
     private final SoftKeyboardChangesThread softKeyboardThread;
-
-    /**
-     *
-     */
     private List<EditText> editTextList;
-
-    /**
-     *
-     */
     private View tempView; // reference to a focused EditText
 
-    /**
-     * @param layout
-     * @param im
-     */
-    SoftKeyboard(ViewGroup layout, InputMethodManager im) {
+
+    public SoftKeyboard(ViewGroup layout, InputMethodManager im) {
         this.layout = layout;
         keyboardHideByDefault();
         initEditTexts(layout);
@@ -79,10 +43,7 @@ class SoftKeyboard implements View.OnFocusChangeListener {
         this.softKeyboardThread.start();
     }
 
-    /**
-     *
-     */
-    void openSoftKeyboard() {
+    public void openSoftKeyboard() {
         if (!isKeyboardShow) {
             layoutBottom = getLayoutCoordinates();
             im.toggleSoftInput(0, InputMethodManager.SHOW_IMPLICIT);
@@ -91,60 +52,40 @@ class SoftKeyboard implements View.OnFocusChangeListener {
         }
     }
 
-    /**
-     *
-     */
-    void closeSoftKeyboard() {
+    public void closeSoftKeyboard() {
         if (isKeyboardShow) {
             im.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
             isKeyboardShow = false;
         }
     }
 
-    /**
-     * @param mCallback
-     */
-    void setSoftKeyboardCallback(SoftKeyboardChanged mCallback) {
+    public void setSoftKeyboardCallback(SoftKeyboardChanged mCallback) {
         softKeyboardThread.setCallback(mCallback);
     }
 
-    /**
-     *
-     */
-    void unRegisterSoftKeyboardCallback() {
+    public void unRegisterSoftKeyboardCallback() {
         softKeyboardThread.stopThread();
     }
 
-    /**
-     *
-     */
     @SuppressWarnings("EmptyMethod")
-    interface SoftKeyboardChanged {
+    public interface SoftKeyboardChanged {
         void onSoftKeyboardHide();
 
         void onSoftKeyboardShow();
     }
 
-    /**
-     * @return
-     */
     private int getLayoutCoordinates() {
         layout.getLocationOnScreen(coords);
         return coords[1] + layout.getHeight();
     }
 
-    /**
-     *
-     */
     private void keyboardHideByDefault() {
         layout.setFocusable(true);
         layout.setFocusableInTouchMode(true);
     }
 
-    /**
+    /*
      * InitEditTexts now handles EditTexts in nested views
-     *
-     * @param viewgroup
      */
     private void initEditTexts(ViewGroup viewgroup) {
         if (editTextList == null)
@@ -170,8 +111,8 @@ class SoftKeyboard implements View.OnFocusChangeListener {
     /**
      * OnFocusChange does update tempView correctly now when keyboard is still shown
      *
-     * @param v
-     * @param hasFocus
+     * @param v View where it is applicated
+     * @param hasFocus If the element has the focus or not
      */
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
@@ -185,7 +126,7 @@ class SoftKeyboard implements View.OnFocusChangeListener {
         }
     }
 
-    /**
+    /*
      * This handler will clear focus of selected EditText
      */
     private final Handler mHandler = new Handler() {
@@ -202,9 +143,6 @@ class SoftKeyboard implements View.OnFocusChangeListener {
         }
     };
 
-    /**
-     *
-     */
     private class SoftKeyboardChangesThread extends Thread {
         private final AtomicBoolean started;
         private SoftKeyboardChanged mCallback;

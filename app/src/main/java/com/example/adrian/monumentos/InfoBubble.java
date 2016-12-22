@@ -5,6 +5,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.example.adrian.monumentos.Fragmentos.MapFragment;
+import com.example.adrian.monumentos.Fragmentos.WikiFragment;
 import com.squareup.picasso.Picasso;
 
 import org.osmdroid.views.MapView;
@@ -14,28 +16,20 @@ import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
 
 /**
  * La clase InfoBubble define la estructura y el contenido que tiene la "burbuja" de información
- * que se muestra cuando, en el mapa, el usuario hace "click" sobre un marcador referente a un POI
+ * que se muestra cuando, en el mapa, el usuario hace "click" sobre un marcador referente a un POI.
+ *
+ * @author Adrián Muñoz Rojo
+ * @author Rafael Matamoros Luque
+ * @author David Carrancio Aguado
+ * @see MapFragment
+ * @see WikiFragment
+ * @version 1.0
  */
-class InfoBubble extends MarkerInfoWindow {
+public class InfoBubble extends MarkerInfoWindow {
 
-    /**
-     *Punto de interes
-     */
     private POI poi;
-
-    /**
-     *Nombre
-     */
     private final static String POI_NOMBRE = "POI_NOMBRE";
-
-    /**
-     *Url
-     */
     private final static String POI_URL = "POI_URL";
-
-    /**
-     *
-     */
     private final boolean mostrarIconoUbicacion;
 
     /**
@@ -44,7 +38,7 @@ class InfoBubble extends MarkerInfoWindow {
      * @param mapFragment
      * @param mostrarIconoUbicacion
      */
-    InfoBubble(MapView mapView, final MapFragment mapFragment, boolean mostrarIconoUbicacion) {
+    public InfoBubble(MapView mapView, final MapFragment mapFragment, boolean mostrarIconoUbicacion) {
         super(R.layout.info_bubble, mapView);
 
         this.mostrarIconoUbicacion = mostrarIconoUbicacion;

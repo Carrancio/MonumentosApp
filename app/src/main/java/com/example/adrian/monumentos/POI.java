@@ -7,7 +7,7 @@ package com.example.adrian.monumentos;
  * @author Rafael Matamoros Luque
  * @author David Carrancio Aguado
  */
-class POI {
+public class POI {
 
     /**
      * Nombre del POi
@@ -63,7 +63,7 @@ class POI {
      *
      * @return El nombre del POI
      */
-    String getNombre() {
+    public String getNombre() {
         return nombre;
     }
 
@@ -72,7 +72,7 @@ class POI {
      *
      * @return La descripcion del POI
      */
-    String getDescripcion() {
+    public String getDescripcion() {
         return descripcion;
     }
 
@@ -81,7 +81,7 @@ class POI {
      *
      * @return La latidud del POI
      */
-    double getLatitud() {
+    public double getLatitud() {
         return latitud;
     }
 
@@ -90,7 +90,7 @@ class POI {
      *
      * @return La longitud del POI
      */
-    double getLongitud() {
+    public double getLongitud() {
         return longitud;
     }
 
@@ -99,7 +99,7 @@ class POI {
      *
      * @return La imagen del POI
      */
-    String getUrl_imagen() {
+    public String getUrl_imagen() {
         return url_imagen;
     }
 
@@ -108,7 +108,7 @@ class POI {
      *
      * @return El enlace del POI
      */
-    String getEnlace() {
+    public String getEnlace() {
         return enlace;
     }
 }

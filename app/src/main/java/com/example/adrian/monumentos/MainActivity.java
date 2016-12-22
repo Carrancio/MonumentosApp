@@ -31,6 +31,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.adrian.monumentos.Fragmentos.AboutFragment;
+import com.example.adrian.monumentos.Fragmentos.HomeFragment;
+import com.example.adrian.monumentos.Fragmentos.MapFragment;
+import com.example.adrian.monumentos.Fragmentos.POIListFragment;
+import com.example.adrian.monumentos.Utilidades.HttpHandler;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -956,7 +961,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         params.putString("Error", tipoError);
 
-        android.app.DialogFragment errorDialogFragment = new com.example.adrian.monumentos.ErrorDialogFragment();
+        android.app.DialogFragment errorDialogFragment = new com.example.adrian.monumentos.Fragmentos.ErrorDialogFragment();
         errorDialogFragment.setArguments(params);
 
         errorDialogFragment.show(getFragmentManager(), "ErrorDialog");

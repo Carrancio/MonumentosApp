@@ -1,4 +1,4 @@
-package com.example.adrian.monumentos;
+package com.example.adrian.monumentos.Utilidades;
 
 import android.util.Log;
 
@@ -14,16 +14,19 @@ import java.net.URL;
 
 /**
  * La clase HttpHandler maneja la url con el JSON y lo pasa a String.
+ *
+ * @author Adrián Muñoz Rojo
+ * @author Rafael Matamoros Luque
+ * @author David Carrancio Aguado
+ * @version 1.0
  */
-class HttpHandler {
+public class HttpHandler {
 
-    /**
-     * Consigue el nombre de la clase afectada
-     */
+    //Nombre de la clase afectada para mostrar la información en el Log
     private static final String TAG = HttpHandler.class.getSimpleName();
 
     /**
-     * Constructor vacío requerido.
+     * El constructor por defecto es reemplazado.
      */
     public HttpHandler() {
     }
@@ -31,8 +34,8 @@ class HttpHandler {
     /**
      * Consigue la respuesta de la url.
      *
-     * @param reqUrl la url que se quiere consultar.
-     * @return Un string con la respuesta.
+     * @param reqUrl La url que se quiere consultar.
+     * @return response Un string con la respuesta.
      */
     public String makeServiceCall(String reqUrl) {
         String response = null;
@@ -55,11 +58,8 @@ class HttpHandler {
         return response;
     }
 
-    /**
+    /*
      * Clase que convierte un InputStream en String
-     *
-     * @param is el InputStream a convertir.
-     * @return El String convertido.
      */
     private String convertStreamToString(InputStream is) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
